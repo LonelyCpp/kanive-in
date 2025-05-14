@@ -5,13 +5,16 @@
 <nav>
 	<div class="container">
 		<NavExtLink label="Ananthu Kanive" href="/" withIcon={false} bold={true} fontSize={24} />
+
 		<div class="nav-links">
+			<NavExtLink label="Uses" href="/uses" withIcon bold={false} fontSize={16} />
 			<NavExtLink
 				label="Projects"
 				href="http://github.com/lonelyCpp/"
 				withIcon
 				bold={false}
 				fontSize={16}
+				newTab
 			/>
 			<NavExtLink
 				label="Contact"
@@ -19,6 +22,7 @@
 				withIcon
 				bold={false}
 				fontSize={16}
+				newTab
 			/>
 		</div>
 	</div>

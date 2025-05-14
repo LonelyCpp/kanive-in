@@ -11,7 +11,12 @@
 	let props: Props = $props();
 </script>
 
-<a href={props.href} target="_blank" aria-label={props.ariaLabel}>
+<a
+	href={props.href}
+	target="_blank"
+	aria-label={props.ariaLabel}
+	style="--box-size: {props.fontSize}px"
+>
 	<Icon icon={props.icon} font-size={props.fontSize} />
 </a>
 
@@ -19,5 +24,7 @@
 	a {
 		color: inherit;
 		text-decoration: none;
+		height: var(--box-size);
+		width: var(--box-size);
 	}
 </style>
