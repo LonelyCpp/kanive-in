@@ -34,6 +34,7 @@
 
 	li {
 		margin-bottom: 8px;
+		color: var(--on-surface-light-color);
 	}
 
 	ul {

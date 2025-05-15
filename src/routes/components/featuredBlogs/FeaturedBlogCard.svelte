@@ -20,29 +20,29 @@
 	}
 
 	.featured-blog-card {
-		background-color: #f4f2f3;
+		background-color: var(--surface-color);
 		padding: 20px;
 		border-radius: 5px;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 2px 5px var(--shadow-color);
 	}
 
 	a {
-		color: #6b6b6b;
+		color: var(--on-surface-light-color);
 		text-decoration: none;
 		font-size: 0.9rem;
-		border-bottom: 1px dotted #aaa;
+		border-bottom: 1px dotted var(--on-surface-underline-color);
 		transition: all 0.2s ease;
 		margin-top: 5px;
 		display: inline-block;
 	}
 
 	a:hover {
-		color: #444;
-		border-bottom: 1px solid #888;
+		color: var(--on-surface-color);
+		border-bottom: 1px solid var(--on-surface-underline-color);
 	}
 
 	.description {
-		color: #666;
+		color: var(--on-surface-light-color);
 		font-size: 0.9rem;
 	}
 </style>

@@ -96,7 +96,7 @@
 		right: 14px;
 		padding: 16px;
 		gap: 24px;
-		background-color: #faf9f9;
+		background-color: var(--surface-color);
 		box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
 		z-index: 10;
 	}

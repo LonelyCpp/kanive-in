@@ -123,7 +123,7 @@
 	.url-input {
 		width: 100%;
 		padding: 0.5rem;
-		border: 1px solid #ccc;
+		border: 1px solid var(--on-surface-underline-color);
 		border-radius: 0.5rem;
 		min-width: 300px;
 		font-size: large;
@@ -160,7 +160,7 @@
 	}
 
 	thead {
-		background-color: #d1dede;
+		background-color: var(--surface-color);
 	}
 
 	th,
@@ -174,7 +174,7 @@
 	}
 
 	td {
-		background-color: #f1f1f1;
+		background-color: var(--surface-color);
 	}
 
 	.name-table-header {
