@@ -17,6 +17,11 @@
 			description="Generate a firebase URL for the smallcase app"
 			link="/tools/smallcase-firebase-url-generator"
 		/>
+		<ToolsCard
+			title="Image Matrix CSS"
+			description="Test out the image matrix CSS"
+			link="/tools/image-matrix-css"
+		/>
 	</div>
 </div>
 
