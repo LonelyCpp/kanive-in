@@ -17,9 +17,17 @@
 	let sepia = $state(0);
 </script>
 
+<svelte:head>
+	<title>Image Matrix CSS</title>
+	<meta name="description" content="Image Matrix CSS tester" />
+</svelte:head>
+
 <h1>Image Matrix CSS</h1>
 
-<p>Image Matrix CSS is a CSS library that allows you to create a matrix of images.</p>
+<p>
+	The filter CSS property applies graphical effects like blur or color shift to an element. Filters
+	are commonly used to adjust the rendering of images, backgrounds, and borders.
+</p>
 
 <div
 	class="image-container"

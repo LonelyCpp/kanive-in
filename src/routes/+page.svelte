@@ -1,8 +1,12 @@
 <script>
-	import Icon from '@iconify/svelte';
 	import IconLink from './components/IconLink.svelte';
 	import FeaturedBlogs from './components/featuredBlogs/FeaturedBlogs.svelte';
 </script>
+
+<svelte:head>
+	<title>Ananthu Kanive</title>
+	<meta name="description" content="Ananthu Kanive's personal website" />
+</svelte:head>
 
 <div class="hero">
 	<h1>Hello World</h1>

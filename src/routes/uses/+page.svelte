@@ -1,3 +1,8 @@
+<svelte:head>
+	<title>Ananthu Uses</title>
+	<meta name="description" content="Ananthu's uses page" />
+</svelte:head>
+
 <div class="container">
 	<h1>Uses</h1>
 

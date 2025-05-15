@@ -60,6 +60,7 @@
 
 <svelte:head>
 	<title>Firebase Link Generator</title>
+	<meta name="description" content="Firebase Link Generator for smallcase apps" />
 </svelte:head>
 
 <div class="container">
