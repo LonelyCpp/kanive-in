@@ -24,5 +24,6 @@
 		width: 100%;
 		flex-direction: column;
 		max-width: 720px;
+		margin-bottom: 32px;
 	}
 </style>

@@ -11,7 +11,7 @@
 <div class="tools-card">
 	<h3>{props.title}</h3>
 	<p class="description">{props.description}</p>
-	<a href={props.link} target="_blank"> Use </a>
+	<a href={props.link}> Use tool </a>
 </div>
 
 <style>
