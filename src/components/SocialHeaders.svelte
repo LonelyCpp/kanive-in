@@ -22,7 +22,6 @@
 	<meta property="og:image:height" content="630" />
 
 	<!-- Twitter -->
-	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={props.title} />
 	<meta name="twitter:description" content={props.subtitle} />
 	<meta name="twitter:image" content={`${BASE_URL}/${props.image_filename}`} />
