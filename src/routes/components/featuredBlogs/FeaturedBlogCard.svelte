@@ -3,6 +3,7 @@
 		title: string;
 		description: string;
 		link: string;
+		newTab?: boolean;
 	}
 
 	let props: Props = $props();
@@ -11,7 +12,7 @@
 <div class="featured-blog-card">
 	<h3>{props.title}</h3>
 	<p class="description">{props.description}</p>
-	<a href={props.link} target="_blank"> Read More </a>
+	<a href={props.link} target={props.newTab ? '_blank' : '_self'}> Read More </a>
 </div>
 
 <style>

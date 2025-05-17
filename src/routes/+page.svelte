@@ -6,6 +6,9 @@
 <svelte:head>
 	<title>Ananthu Kanive</title>
 	<meta name="description" content="Ananthu Kanive's personal website" />
+	<meta property="og:image" content="/default-og-image.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
 </svelte:head>
 
 <div class="hero">
