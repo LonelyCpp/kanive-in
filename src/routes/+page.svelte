@@ -1,16 +1,15 @@
 <script>
 	import { BASE_URL } from '$lib/constants';
+	import SocialHeaders from '../components/SocialHeaders.svelte';
 	import IconLink from './components/IconLink.svelte';
 	import FeaturedBlogs from './components/featuredBlogs/FeaturedBlogs.svelte';
 </script>
 
-<svelte:head>
-	<title>Ananthu Kanive</title>
-	<meta name="description" content="Ananthu Kanive's personal website" />
-	<meta property="og:image" content={`${BASE_URL}/default-og-image.png`} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-</svelte:head>
+<SocialHeaders
+	title="Ananthu Kanive"
+	subtitle="Ananthu Kanive's personal website"
+	image_filename="default-og-image.png"
+/>
 
 <div class="hero">
 	<h1>Hello World</h1>
