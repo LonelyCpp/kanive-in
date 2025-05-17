@@ -1,4 +1,5 @@
 <script>
+	import { BASE_URL } from '$lib/constants';
 	import BlogHero from '../components/BlogHero.svelte';
 </script>
 
@@ -9,7 +10,7 @@
 		content="URLs (Uniform Resource Locators) are the building blocks of the web. In this article, we'll break down the key components of a URL, explaining each part and its
 				purpose."
 	/>
-	<meta property="og:image" content="/what-in-a-url-og.png" />
+	<meta property="og:image" content={`${BASE_URL}/what-in-a-url-og.png`} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 </svelte:head>
