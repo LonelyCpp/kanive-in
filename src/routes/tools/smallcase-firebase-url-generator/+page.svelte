@@ -108,8 +108,10 @@
 				c: utm_medium
 			});
 
-			generatedFirebaseLink = `${baseURL}?${firebaseParams.toString()}`;
-			generatedAppsFlyerLink = `${appsFlyerBaseURL}${af_template}/?${appsFlyerParams.toString()}`;
+			generatedFirebaseLink = new URL(`${baseURL}?${firebaseParams.toString()}`).toString();
+			generatedAppsFlyerLink = new URL(
+				`${appsFlyerBaseURL}${af_template}/?${appsFlyerParams.toString()}`
+			).toString();
 
 			saveToLocalStorage();
 		} catch (error) {
