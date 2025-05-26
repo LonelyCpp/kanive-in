@@ -6,13 +6,16 @@
 	let utm_campaign = '';
 	let utm_content = '';
 	let utm_term = '';
-	let generatedLink = '';
+	let generatedFirebaseLink = '';
+	let generatedAppsFlyerLink = '';
 	let errorMessage = '';
+	let af_template = '';
 
 	function generateLink() {
 		errorMessage = '';
 		try {
 			const baseURL = 'https://smallcase.page.link/';
+			const appsFlyerBaseURL = 'https://go.smallcase.com/';
 
 			if (!link || !link.startsWith('https')) {
 				throw new Error('link has to start with https://');
@@ -22,10 +25,10 @@
 				throw new Error('fallback link has to start with https://');
 			}
 
-			const linkObj = new URL(link);
-			const oflLinkObj = new URL(ofl);
+			const baseFinalUrl = new URL(link);
+			const baseFinalWebFallbackUrl = new URL(ofl);
 
-			[linkObj, oflLinkObj].forEach((lk) => {
+			[baseFinalUrl, baseFinalWebFallbackUrl].forEach((lk) => {
 				lk.searchParams.set('utm_source', utm_source);
 				lk.searchParams.set('utm_medium', utm_medium);
 				lk.searchParams.set('utm_campaign', utm_campaign);
@@ -33,12 +36,12 @@
 				lk.searchParams.set('utm_term', utm_term);
 			});
 
-			const params = new URLSearchParams({
+			const firebaseParams = new URLSearchParams({
 				apn: 'com.smallcase.android',
 				isi: '1345309437',
 				ibi: 'com.smallcase.smallcaseIos',
-				link: linkObj.toString(),
-				ofl: oflLinkObj.toString(),
+				link: baseFinalUrl.toString(),
+				ofl: baseFinalWebFallbackUrl.toString(),
 				utm_source,
 				utm_medium,
 				utm_campaign,
@@ -46,21 +49,34 @@
 				utm_term
 			});
 
-			generatedLink = `${baseURL}?${params.toString()}`;
+			const appsFlyerParams = new URLSearchParams({
+				deep_link_value: baseFinalUrl.toString(),
+				af_dp: baseFinalUrl.toString(),
+				af_web_dp: baseFinalWebFallbackUrl.toString(),
+				af_xp: 'social',
+				pid: utm_source,
+				af_adset: utm_campaign,
+				af_ad: utm_content,
+				af_channel: utm_term,
+				c: utm_medium
+			});
+
+			generatedFirebaseLink = `${baseURL}?${firebaseParams.toString()}`;
+			generatedAppsFlyerLink = `${appsFlyerBaseURL}${af_template}/?${appsFlyerParams.toString()}`;
 		} catch (error) {
 			errorMessage = error instanceof Error ? error.message : String(error);
 		}
 	}
 
 	function copyLink() {
-		if (!generatedLink) return;
-		navigator.clipboard.writeText(generatedLink);
+		if (!generatedFirebaseLink) return;
+		navigator.clipboard.writeText(generatedFirebaseLink);
 	}
 </script>
 
 <svelte:head>
-	<title>Firebase Link Generator</title>
-	<meta name="description" content="Firebase Link Generator for smallcase apps" />
+	<title>Link Generator for smallcase apps</title>
+	<meta name="description" content="Link Generator for smallcase apps" />
 </svelte:head>
 
 <div class="container">
@@ -83,6 +99,10 @@
 			required
 			placeholder="https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
 		/>
+	</label>
+	<label>
+		<span class="label-text"> AppsFlyer Template: </span>
+		<input type="af-template" bind:value={af_template} required placeholder="gIQT" />
 	</label>
 	<label>
 		<span class="label-text"> UTM Source: </span>
@@ -110,8 +130,18 @@
 		<button on:click={copyLink}>Copy Link</button>
 	</div>
 
-	{#if generatedLink}
-		<p id="generated-link">{generatedLink}</p>
+	{#if generatedFirebaseLink}
+		<p class="output-link-label">Firebase Link:</p>
+		<p id="generated-link">
+			{generatedFirebaseLink}
+		</p>
+	{/if}
+
+	{#if generatedAppsFlyerLink}
+		<p class="output-link-label">AppsFlyer Link:</p>
+		<p id="generated-link">
+			{generatedAppsFlyerLink}
+		</p>
 	{/if}
 
 	{#if errorMessage}
@@ -141,11 +171,18 @@
 		cursor: pointer;
 	}
 	#generated-link {
+		font-style: italic;
 		margin-top: 10px;
 		word-break: break-all;
+		font-weight: 100;
 	}
 
 	.button-container {
+		margin-top: 10px;
+	}
+
+	.output-link-label {
+		font-weight: bold;
 		margin-top: 10px;
 	}
 
