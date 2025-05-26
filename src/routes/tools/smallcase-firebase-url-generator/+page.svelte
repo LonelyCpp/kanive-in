@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+
 	let link = '';
 	let ofl = '';
 	let utm_source = '';
@@ -10,6 +12,51 @@
 	let generatedAppsFlyerLink = '';
 	let errorMessage = '';
 	let af_template = '';
+
+	const LOCAL_STORAGE_KEY = 'sc-link-form-values';
+
+	// Save form values to localStorage
+	function saveToLocalStorage() {
+		try {
+			const formValues = {
+				link,
+				ofl,
+				utm_source,
+				utm_medium,
+				utm_campaign,
+				utm_content,
+				utm_term,
+				af_template
+			};
+			localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formValues));
+		} catch (error) {
+			console.error('Error saving form values to localStorage:', error);
+		}
+	}
+
+	// Load form values from localStorage
+	function loadFromLocalStorage() {
+		try {
+			const savedValues = localStorage.getItem(LOCAL_STORAGE_KEY);
+			if (savedValues) {
+				const formValues = JSON.parse(savedValues);
+				link = formValues.link || '';
+				ofl = formValues.ofl || '';
+				utm_source = formValues.utm_source || '';
+				utm_medium = formValues.utm_medium || '';
+				utm_campaign = formValues.utm_campaign || '';
+				utm_content = formValues.utm_content || '';
+				utm_term = formValues.utm_term || '';
+				af_template = formValues.af_template || '';
+			}
+		} catch (error) {
+			console.error('Error loading form values from localStorage:', error);
+		}
+	}
+
+	onMount(() => {
+		loadFromLocalStorage();
+	});
 
 	function generateLink() {
 		errorMessage = '';
@@ -63,14 +110,11 @@
 
 			generatedFirebaseLink = `${baseURL}?${firebaseParams.toString()}`;
 			generatedAppsFlyerLink = `${appsFlyerBaseURL}${af_template}/?${appsFlyerParams.toString()}`;
+
+			saveToLocalStorage();
 		} catch (error) {
 			errorMessage = error instanceof Error ? error.message : String(error);
 		}
-	}
-
-	function copyLink() {
-		if (!generatedFirebaseLink) return;
-		navigator.clipboard.writeText(generatedFirebaseLink);
 	}
 </script>
 
@@ -127,7 +171,6 @@
 
 	<div class="button-container">
 		<button on:click={generateLink}>Generate Link</button>
-		<button on:click={copyLink}>Copy Link</button>
 	</div>
 
 	{#if generatedFirebaseLink}
