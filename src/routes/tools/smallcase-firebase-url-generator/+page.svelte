@@ -134,7 +134,7 @@
 			type="url"
 			bind:value={link}
 			required
-			placeholder="https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
+			placeholder="example: https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
 		/>
 	</label>
 	<label>
@@ -143,32 +143,32 @@
 			type="url"
 			bind:value={ofl}
 			required
-			placeholder="https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
+			placeholder="example: https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
 		/>
 	</label>
 	<label>
 		<span class="label-text"> AppsFlyer Template: </span>
-		<input type="af-template" bind:value={af_template} required placeholder="gIQT" />
+		<input type="af-template" bind:value={af_template} required placeholder="example: gIQT" />
 	</label>
 	<label>
 		<span class="label-text"> UTM Source: </span>
-		<input type="text" bind:value={utm_source} placeholder="Enter utm_source" />
+		<input type="text" bind:value={utm_source} placeholder="example: COMMS" />
 	</label>
 	<label>
 		<span class="label-text"> UTM Medium: </span>
-		<input type="text" bind:value={utm_medium} placeholder="Enter utm_medium" />
+		<input type="text" bind:value={utm_medium} placeholder="example: WHATSAPP" />
 	</label>
 	<label>
 		<span class="label-text"> UTM Campaign: </span>
-		<input type="text" bind:value={utm_campaign} placeholder="Enter utm_campaign" />
+		<input type="text" bind:value={utm_campaign} placeholder="example: SC_CAMP" />
 	</label>
 	<label>
 		<span class="label-text"> UTM Content: </span>
-		<input type="text" bind:value={utm_content} placeholder="Enter utm_content" />
+		<input type="text" bind:value={utm_content} placeholder="example: SC_CONTENT" />
 	</label>
 	<label>
 		<span class="label-text"> UTM Term: </span>
-		<input type="text" bind:value={utm_term} placeholder="Enter utm_term" />
+		<input type="text" bind:value={utm_term} placeholder="example: SC_TERM" />
 	</label>
 
 	<div class="button-container">
