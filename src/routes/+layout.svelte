@@ -1,5 +1,10 @@
 <script>
+	import { dev } from '$app/environment';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+
 	import NavbarMain from './components/nav/NavbarMain.svelte';
+
+	injectAnalytics({ mode: dev ? 'development' : 'production' });
 
 	let { children } = $props();
 </script>
