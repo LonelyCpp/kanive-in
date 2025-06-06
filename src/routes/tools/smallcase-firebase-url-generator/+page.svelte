@@ -64,8 +64,10 @@
 			const firebaseBaseURL = 'https://smallcase.page.link/';
 			const appsFlyerBaseURL = 'https://go.smallcase.com/';
 
-			const baseFinalUrl = new URL(link);
-			const baseFinalWebFallbackUrl = new URL(ofl);
+			const baseFinalUrl = new URL(link.replace('smallcase://', 'https://www.smallcase.com/'));
+			const baseFinalWebFallbackUrl = new URL(
+				ofl.replace('smallcase://', 'https://www.smallcase.com/')
+			);
 
 			[baseFinalUrl, baseFinalWebFallbackUrl].forEach((lk) => {
 				lk.searchParams.set('utm_source', utm_source);
@@ -78,6 +80,8 @@
 				lk.host = 'www.smallcase.com';
 				lk.port = '';
 			});
+
+			console.log('ananthu', baseFinalUrl.toString(), baseFinalWebFallbackUrl.toString());
 
 			const firebaseParams = new URLSearchParams({
 				apn: 'com.smallcase.android',
