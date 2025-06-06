@@ -61,16 +61,8 @@
 	function generateLink() {
 		errorMessage = '';
 		try {
-			const baseURL = 'https://smallcase.page.link/';
+			const firebaseBaseURL = 'https://smallcase.page.link/';
 			const appsFlyerBaseURL = 'https://go.smallcase.com/';
-
-			if (!link || !link.startsWith('https')) {
-				throw new Error('link has to start with https://');
-			}
-
-			if (!ofl || !ofl.startsWith('https')) {
-				throw new Error('fallback link has to start with https://');
-			}
 
 			const baseFinalUrl = new URL(link);
 			const baseFinalWebFallbackUrl = new URL(ofl);
@@ -81,6 +73,10 @@
 				lk.searchParams.set('utm_campaign', utm_campaign);
 				lk.searchParams.set('utm_content', utm_content);
 				lk.searchParams.set('utm_term', utm_term);
+
+				lk.protocol = 'https';
+				lk.host = 'www.smallcase.com';
+				lk.port = '';
 			});
 
 			const firebaseParams = new URLSearchParams({
@@ -108,7 +104,7 @@
 				c: utm_medium
 			});
 
-			generatedFirebaseLink = new URL(`${baseURL}?${firebaseParams.toString()}`).toString();
+			generatedFirebaseLink = new URL(`${firebaseBaseURL}?${firebaseParams.toString()}`).toString();
 			generatedAppsFlyerLink = new URL(
 				`${appsFlyerBaseURL}${af_template}/?${appsFlyerParams.toString()}`
 			).toString();
@@ -128,64 +124,66 @@
 <div class="container">
 	<h2>Link Generator</h2>
 
-	<label>
-		<span class="label-text"> Base Link: </span>
-		<input
-			type="url"
-			bind:value={link}
-			required
-			placeholder="example: https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
-		/>
-	</label>
-	<label>
-		<span class="label-text"> Fallback Web Link: </span>
-		<input
-			type="url"
-			bind:value={ofl}
-			required
-			placeholder="example: https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
-		/>
-	</label>
-	<label>
-		<span class="label-text"> AppsFlyer Template: </span>
-		<input type="af-template" bind:value={af_template} required placeholder="example: gIQT" />
-	</label>
-	<label>
-		<span class="label-text"> UTM Source: </span>
-		<input type="text" bind:value={utm_source} placeholder="example: COMMS" />
-	</label>
-	<label>
-		<span class="label-text"> UTM Medium: </span>
-		<input type="text" bind:value={utm_medium} placeholder="example: WHATSAPP" />
-	</label>
-	<label>
-		<span class="label-text"> UTM Campaign: </span>
-		<input type="text" bind:value={utm_campaign} placeholder="example: SC_CAMP" />
-	</label>
-	<label>
-		<span class="label-text"> UTM Content: </span>
-		<input type="text" bind:value={utm_content} placeholder="example: SC_CONTENT" />
-	</label>
-	<label>
-		<span class="label-text"> UTM Term: </span>
-		<input type="text" bind:value={utm_term} placeholder="example: SC_TERM" />
-	</label>
+	<form onsubmit={generateLink}>
+		<label>
+			<span class="label-text"> App Link: </span>
+			<input
+				type="url"
+				bind:value={link}
+				required
+				placeholder="example: https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
+			/>
+		</label>
+		<label>
+			<span class="label-text"> Fallback Web Link: </span>
+			<input
+				type="url"
+				bind:value={ofl}
+				required
+				placeholder="example: https://www.smallcase.com/smallcase/WRTNM_0001#intro-video"
+			/>
+		</label>
+		<label>
+			<span class="label-text"> AppsFlyer Template: </span>
+			<input type="af-template" bind:value={af_template} required placeholder="example: gIQT" />
+		</label>
+		<label>
+			<span class="label-text"> UTM Source: </span>
+			<input type="text" bind:value={utm_source} placeholder="example: COMMS" />
+		</label>
+		<label>
+			<span class="label-text"> UTM Medium: </span>
+			<input type="text" bind:value={utm_medium} placeholder="example: WHATSAPP" />
+		</label>
+		<label>
+			<span class="label-text"> UTM Campaign: </span>
+			<input type="text" bind:value={utm_campaign} placeholder="example: SC_CAMP" />
+		</label>
+		<label>
+			<span class="label-text"> UTM Content: </span>
+			<input type="text" bind:value={utm_content} placeholder="example: SC_CONTENT" />
+		</label>
+		<label>
+			<span class="label-text"> UTM Term: </span>
+			<input type="text" bind:value={utm_term} placeholder="example: SC_TERM" />
+		</label>
 
-	<div class="button-container">
-		<button on:click={generateLink}>Generate Link</button>
-	</div>
-
-	{#if generatedFirebaseLink}
-		<p class="output-link-label">Firebase Link:</p>
-		<p id="generated-link">
-			{generatedFirebaseLink}
-		</p>
-	{/if}
+		<div class="button-container">
+			<input type="submit" value="Generate Link" />
+		</div>
+	</form>
 
 	{#if generatedAppsFlyerLink}
 		<p class="output-link-label">AppsFlyer Link:</p>
 		<p id="generated-link">
 			{generatedAppsFlyerLink}
+		</p>
+	{/if}
+
+	{#if generatedFirebaseLink}
+		<p class="output-link-label">Firebase Link: (deprecated)</p>
+		<p id="generated-link">
+			{generatedFirebaseLink}
 		</p>
 	{/if}
 
@@ -210,11 +208,6 @@
 		font-size: 12px;
 	}
 
-	button {
-		padding: 10px;
-		margin-right: 5px;
-		cursor: pointer;
-	}
 	#generated-link {
 		font-style: italic;
 		margin-top: 10px;
@@ -223,7 +216,8 @@
 	}
 
 	.button-container {
-		margin-top: 10px;
+		margin-top: 12px;
+		text-align: left;
 	}
 
 	.output-link-label {

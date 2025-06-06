@@ -13,8 +13,8 @@
 			link="/tools/url-visualizer"
 		/>
 		<ToolsCard
-			title="Generate a firebase URL (smallcase app)"
-			description="Generate a firebase URL for the smallcase app"
+			title="Generate a shareable app URL (smallcase app)"
+			description="Generate a URL for the smallcase app"
 			link="/tools/smallcase-firebase-url-generator"
 		/>
 		<ToolsCard
