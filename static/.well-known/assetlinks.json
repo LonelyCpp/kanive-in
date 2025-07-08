@@ -1,32 +1,12 @@
 [
 	{
-		"relation": ["delegate_permission/common.handle_all_urls"],
 		"target": {
-			"namespace": "android_app",
 			"package_name": "com.smallcase.android",
 			"sha256_cert_fingerprints": [
 				"C7:1A:00:58:34:97:C3:F9:18:63:87:E6:00:94:17:C1:AF:FC:A0:B6:FA:F4:0D:DD:3B:C0:DC:62:3D:C3:83:2D"
-			]
-		}
-	},
-	{
-		"relation": ["delegate_permission/common.handle_all_urls"],
-		"target": {
-			"namespace": "gatewaydemo_native",
-			"package_name": "in.smallcase.gateway.sample",
-			"sha256_cert_fingerprints": [
-				"36:00:06:F4:E0:CF:80:F3:9C:44:CA:8C:8D:34:75:12:48:A4:18:A7:7E:19:38:31:5C:A9:00:8F:95:72:4C:D6"
-			]
-		}
-	},
-	{
-		"relation": ["delegate_permission/common.handle_all_urls"],
-		"target": {
-			"namespace": "gatewaydemo_react_native",
-			"package_name": "com.smart_investing_react_native",
-			"sha256_cert_fingerprints": [
-				"36:00:06:F4:E0:CF:80:F3:9C:44:CA:8C:8D:34:75:12:48:A4:18:A7:7E:19:38:31:5C:A9:00:8F:95:72:4C:D6"
-			]
-		}
+			],
+			"namespace": "android_app"
+		},
+		"relation": ["delegate_permission/common.handle_all_urls"]
 	}
 ]
