@@ -5,8 +5,7 @@
 			"namespace": "android_app",
 			"package_name": "com.smallcase.android",
 			"sha256_cert_fingerprints": [
-				"C7:1A:00:58:34:97:C3:F9:18:63:87:E6:00:94:17:C1:AF:FC:A0:B6:FA:F4:0D:DD:3B:C0:DC:62:3D:C3:83:2D",
-				"25:31:8B:9D:16:95:39:E6:14:29:01:C2:65:76:CD:DC:2D:BD:20:4E:E0:19:6C:30:50:EF:59:41:C9:86:62:BF"
+				"C7:1A:00:58:34:97:C3:F9:18:63:87:E6:00:94:17:C1:AF:FC:A0:B6:FA:F4:0D:DD:3B:C0:DC:62:3D:C3:83:2D"
 			]
 		}
 	},
