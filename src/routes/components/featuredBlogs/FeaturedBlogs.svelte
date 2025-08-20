@@ -7,6 +7,13 @@
 <div class="featured-blogs">
 	<div class="featured-blog">
 		<FeaturedBlogCard
+			title="A game of Wordle"
+			description="The game of Wordle built with React Native Web (expo)"
+			link="https://lonelycpp.github.io/react-native-wordle/"
+		/>
+	</div>
+	<div class="featured-blog">
+		<FeaturedBlogCard
 			title="What's in a URL?"
 			description="A short break down of the components of a URL"
 			link="/blog/whats-in-a-url"
