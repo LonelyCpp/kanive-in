@@ -10,6 +10,7 @@
 		<NavExtLink label="Ananthu Kanive" href="/" bold={true} fontSize={24} />
 
 		<div class="nav-links-desktop">
+			<NavExtLink label="Art" href="/art" withUnderline bold={false} fontSize={16} />
 			<NavExtLink label="Uses" href="/uses" withUnderline bold={false} fontSize={16} />
 			<NavExtLink label="Tools" href="/tools" withUnderline bold={false} fontSize={16} />
 			<NavExtLink
@@ -33,6 +34,7 @@
 			</button>
 			{#if isMenuOpen}
 				<div class="menu-container">
+					<NavExtLink label="Art" href="/art" withUnderline bold={false} fontSize={16} />
 					<NavExtLink label="Uses" href="/uses" withUnderline bold={false} fontSize={16} />
 					<NavExtLink label="Tools" href="/tools" withUnderline bold={false} fontSize={16} />
 					<NavExtLink

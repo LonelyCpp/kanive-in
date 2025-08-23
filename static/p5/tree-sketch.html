@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Sketch</title>
+		<script src="/libraries/p5.min.js"></script>
+	</head>
+
+	<body>
+		<script>
+			const WINDOW_SIZE = 500;
+			const START_LENGTH = 100;
+			const TREE_MAX_DEPTH = 10;
+
+			function setup() {
+				createCanvas(WINDOW_SIZE, WINDOW_SIZE);
+			}
+
+			let t = 0;
+			function draw() {
+				background(220);
+
+				strokeWeight(4);
+				line(WINDOW_SIZE / 2, WINDOW_SIZE, WINDOW_SIZE / 2, WINDOW_SIZE - START_LENGTH);
+
+				drawTree(
+					WINDOW_SIZE / 2,
+					WINDOW_SIZE - START_LENGTH,
+					START_LENGTH,
+					TREE_MAX_DEPTH,
+					PI / 2,
+					t
+				);
+
+				t += 0.009;
+			}
+
+			function drawTree(rootX, rootY, length, depth, angle, dt) {
+				const newDepth = depth - 1;
+				const newLength = length * 0.7;
+
+				const branches = Math.floor(random(1, 4));
+
+				const n = noise(dt);
+
+				const angleDiff = PI / 9 + map(n, 0, 1, 0, map(depth, 0, TREE_MAX_DEPTH, PI / 5, 0));
+
+				if (depth === 0) {
+					stroke('pink');
+				}
+
+				strokeWeight(map(depth, 0, TREE_MAX_DEPTH, 1, 4));
+
+				line(
+					rootX,
+					rootY,
+					rootX + length * cos(angle - angleDiff),
+					rootY - length * sin(angle - angleDiff)
+				);
+
+				line(
+					rootX,
+					rootY,
+					rootX + length * cos(angle + angleDiff),
+					rootY - length * sin(angle + angleDiff)
+				);
+
+				if (depth === 0) {
+					stroke('brown');
+				}
+
+				if (depth > 0) {
+					drawTree(
+						rootX + length * cos(angle - angleDiff),
+						rootY - length * sin(angle - angleDiff),
+						newLength,
+						newDepth,
+						angle - angleDiff,
+						dt
+					);
+
+					drawTree(
+						rootX + length * cos(angle + angleDiff),
+						rootY - length * sin(angle + angleDiff),
+						newLength,
+						newDepth,
+						angle + angleDiff,
+						dt
+					);
+				}
+			}
+		</script>
+	</body>
+</html>
