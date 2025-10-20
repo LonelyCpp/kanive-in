@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Circle Dot Pi Estimation</title>
+		<script src="/libraries/p5.min.js"></script>
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+			:root {
+				--md-primary: #6750a4;
+				--md-primary-container: #eaddff;
+				--md-secondary: #625b71;
+				--md-secondary-container: #e8def8;
+				--md-tertiary: #7d5260;
+				--md-surface: #fffbfe;
+				--md-surface-variant: #f3f0f4;
+				--md-surface-container: #f7f2fa;
+				--md-surface-container-high: #f1ecf4;
+				--md-on-surface: #1c1b1f;
+				--md-on-surface-variant: #49454f;
+				--md-outline: #79747e;
+				--md-outline-variant: #cac4d0;
+				--md-error: #ba1a1a;
+				--md-error-container: #ffdad6;
+				--md-success: #006e1c;
+				--md-success-container: #9cf675;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				padding: 0;
+				font-family:
+					'Roboto',
+					-apple-system,
+					BlinkMacSystemFont,
+					sans-serif;
+				background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+				overflow-x: hidden;
+				color: var(--md-on-surface);
+			}
+
+			.main-container {
+				display: flex;
+				height: 100vh;
+				gap: 16px;
+				padding: 16px;
+				box-sizing: border-box;
+			}
+
+			.canvas-container {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 16px;
+			}
+
+			.stats-panel {
+				background: var(--md-surface);
+				padding: 16px;
+				border-radius: 20px;
+				box-shadow:
+					0 4px 12px rgba(103, 80, 164, 0.12),
+					0 1px 3px rgba(0, 0, 0, 0.06);
+				min-width: 200px;
+				max-width: 220px;
+				height: fit-content;
+				border: 1px solid var(--md-outline-variant);
+			}
+
+			.stats-panel h3 {
+				margin: 0 0 12px 0;
+				color: var(--md-on-surface);
+				font-size: 1.125rem;
+				font-weight: 500;
+				letter-spacing: 0.1px;
+			}
+
+			.stat-item {
+				margin: 8px 0;
+				padding: 8px 12px;
+				background: var(--md-surface-container);
+				border-radius: 12px;
+				border: 1px solid var(--md-outline-variant);
+				transition: all 0.2s ease;
+			}
+
+			.stat-item:hover {
+				background: var(--md-surface-container-high);
+				transform: translateY(-1px);
+				box-shadow: 0 2px 8px rgba(103, 80, 164, 0.1);
+			}
+
+			.stat-label {
+				font-weight: 500;
+				color: var(--md-on-surface-variant);
+				font-size: 0.75rem;
+				margin-bottom: 2px;
+				letter-spacing: 0.3px;
+			}
+
+			.stat-value {
+				font-size: 0.875rem;
+				font-weight: 600;
+				color: var(--md-primary);
+				font-family: 'Roboto Mono', monospace;
+			}
+
+			#rainButton {
+				background: var(--md-primary);
+				color: white;
+				border: none;
+				padding: 12px 16px;
+				font-size: 0.875rem;
+				font-weight: 500;
+				border-radius: 20px;
+				cursor: pointer;
+				margin-bottom: 16px;
+				transition: all 0.2s ease;
+				width: 100%;
+				box-shadow: 0 2px 8px rgba(103, 80, 164, 0.25);
+				letter-spacing: 0.4px;
+				text-transform: uppercase;
+			}
+
+			#rainButton:hover {
+				background: #553c92;
+				transform: translateY(-2px);
+				box-shadow: 0 6px 20px rgba(103, 80, 164, 0.4);
+			}
+
+			#rainButton.active {
+				background: var(--md-error);
+				box-shadow: 0 3px 12px rgba(186, 26, 26, 0.3);
+			}
+
+			#rainButton.active:hover {
+				background: #a01717;
+				box-shadow: 0 6px 20px rgba(186, 26, 26, 0.4);
+			}
+
+			.instructions {
+				background: var(--md-primary-container);
+				padding: 12px;
+				border-radius: 16px;
+				margin-bottom: 16px;
+				border: 1px solid rgba(103, 80, 164, 0.2);
+				color: var(--md-on-surface);
+				font-size: 0.8rem;
+			}
+
+			.instructions strong {
+				color: var(--md-primary);
+				font-weight: 600;
+			}
+
+			#speedSlider {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 100%;
+				height: 6px;
+				border-radius: 3px;
+				background: var(--md-outline-variant);
+				outline: none;
+				margin: 8px 0;
+				cursor: pointer;
+			}
+
+			#speedSlider::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 24px;
+				height: 24px;
+				border-radius: 50%;
+				background: var(--md-primary);
+				cursor: pointer;
+				box-shadow: 0 2px 8px rgba(103, 80, 164, 0.3);
+				transition: all 0.2s ease;
+			}
+
+			#speedSlider::-webkit-slider-thumb:hover {
+				transform: scale(1.1);
+				box-shadow: 0 4px 12px rgba(103, 80, 164, 0.4);
+			}
+
+			#speedSlider::-moz-range-thumb {
+				width: 24px;
+				height: 24px;
+				border-radius: 50%;
+				background: var(--md-primary);
+				cursor: pointer;
+				border: none;
+				box-shadow: 0 2px 8px rgba(103, 80, 164, 0.3);
+			}
+
+			.pi-display {
+				background: linear-gradient(135deg, var(--md-primary) 0%, var(--md-tertiary) 100%);
+				color: white;
+				padding: 20px;
+				border-radius: 20px;
+				box-shadow:
+					0 6px 20px rgba(103, 80, 164, 0.2),
+					0 2px 6px rgba(0, 0, 0, 0.08);
+				text-align: center;
+				margin-top: 16px;
+				min-width: 240px;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+			}
+
+			.pi-label {
+				font-size: 1rem;
+				font-weight: 500;
+				margin-bottom: 8px;
+				text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+				letter-spacing: 0.5px;
+			}
+
+			.pi-value {
+				font-size: 2.5rem;
+				font-weight: 700;
+				font-family: 'Roboto Mono', monospace;
+				text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+				letter-spacing: 2px;
+				margin: 8px 0;
+			}
+
+			.pi-info {
+				margin-top: 12px;
+				font-size: 0.8rem;
+				opacity: 0.95;
+				font-weight: 400;
+			}
+
+			.pi-info a {
+				color: #ffd54f;
+				text-decoration: none;
+				font-weight: 600;
+				transition: all 0.2s ease;
+				border-bottom: 1px solid transparent;
+			}
+
+			.pi-info a:hover {
+				border-bottom: 1px solid #ffd54f;
+				transform: translateY(-1px);
+			}
+
+			#sketch-container {
+				border-radius: 24px;
+				box-shadow:
+					0 8px 32px rgba(103, 80, 164, 0.15),
+					0 2px 8px rgba(0, 0, 0, 0.08);
+				overflow: hidden;
+				border: 2px solid var(--md-outline-variant);
+				transition: all 0.3s ease;
+			}
+
+			#sketch-container:hover {
+				box-shadow:
+					0 12px 40px rgba(103, 80, 164, 0.2),
+					0 4px 12px rgba(0, 0, 0, 0.1);
+			}
+
+			/* Speed slider labels styling */
+			.speed-labels {
+				display: flex;
+				justify-content: space-between;
+				font-size: 0.6rem;
+				color: var(--md-on-surface-variant);
+				font-weight: 500;
+				margin-bottom: 4px;
+			}
+
+			.speed-value-display {
+				text-align: center;
+				margin-top: 4px;
+				font-family: 'Roboto Mono', monospace;
+				font-weight: 500;
+				color: var(--md-primary);
+				font-size: 0.7rem;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="main-container">
+			<div class="canvas-container">
+				<div id="sketch-container"></div>
+
+				<div class="pi-display">
+					<div class="pi-label">π Estimation</div>
+					<div class="pi-value" id="piDisplayValue">0.0000</div>
+					<div class="pi-info">
+						Using Monte Carlo Method<br />
+						<a href="https://en.wikipedia.org/wiki/Monte_Carlo_method" target="_blank"
+							>Why this works →</a
+						>
+					</div>
+				</div>
+			</div>
+
+			<div class="stats-panel">
+				<div class="instructions">
+					<strong>Instructions:</strong><br />
+					• Drag to create a circle<br />
+					• Click "Start Raining Dots" to begin<br />
+					• Watch the π estimation converge!
+				</div>
+
+				<button id="rainButton">Start Raining Dots</button>
+
+				<div class="stat-item">
+					<div class="stat-label">Dot Generation Speed</div>
+					<div class="speed-labels">
+						<span>Slow</span>
+						<span>Fast</span>
+					</div>
+					<input type="range" id="speedSlider" min="10" max="500" value="100" step="10" />
+					<div class="speed-value-display"><span id="speedValue">410</span>ms per dot</div>
+				</div>
+
+				<h3>Statistics</h3>
+
+				<div class="stat-item">
+					<div class="stat-label">🔴 Inside Circle:</div>
+					<div class="stat-value" id="dotsInsideCircle">0</div>
+				</div>
+
+				<div class="stat-item">
+					<div class="stat-label">🟡 Inside Square Only:</div>
+					<div class="stat-value" id="dotsInsideSquareOnly">0</div>
+				</div>
+
+				<div class="stat-item">
+					<div class="stat-label">🔵 Outside Square:</div>
+					<div class="stat-value" id="dotsOutsideSquare">0</div>
+				</div>
+
+				<div class="stat-item">
+					<div class="stat-label">Total Dots in Square:</div>
+					<div class="stat-value" id="dotsInSquare">0</div>
+				</div>
+
+				<div class="stat-item">
+					<div class="stat-label">Total Dots:</div>
+					<div class="stat-value" id="totalDots">0</div>
+				</div>
+
+				<div class="stat-item">
+					<div class="stat-label">Circle/Square Ratio:</div>
+					<div class="stat-value" id="ratio">0</div>
+				</div>
+
+				<div class="stat-item">
+					<div class="stat-label">Pi Estimation:</div>
+					<div class="stat-value" id="piEstimate">0</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			let canvas;
+			let circle = { x: 0, y: 0, radius: 0, exists: false };
+			let dots = [];
+			let dotsInsideCircle = 0;
+			let dotsInsideSquareOnly = 0;
+			let dotsOutsideSquare = 0;
+			let isRaining = false;
+			let rainInterval;
+			let isDragging = false;
+			let startX, startY;
+			let dotGenerationSpeed = 100; // milliseconds (510 - 100 from initial slider value)
+
+			function setup() {
+				// Calculate canvas size to fit available space
+				const containerWidth = document.querySelector('.canvas-container').clientWidth - 20; // less padding
+				const containerHeight = window.innerHeight - 180; // less space needed for smaller pi display
+				const canvasSize = Math.min(containerWidth, containerHeight, 900); // higher max size
+
+				canvas = createCanvas(canvasSize, canvasSize);
+				canvas.parent('sketch-container');
+				background(255);
+
+				// Set up the rain button
+				const rainButton = document.getElementById('rainButton');
+				rainButton.addEventListener('click', toggleRain);
+
+				// Set up the speed slider
+				const speedSlider = document.getElementById('speedSlider');
+				const speedValue = document.getElementById('speedValue');
+
+				// Initialize the display value
+				speedValue.textContent = dotGenerationSpeed;
+
+				speedSlider.addEventListener('input', function () {
+					// Reverse the slider: 10 (left) = 500ms (slow), 500 (right) = 10ms (fast)
+					dotGenerationSpeed = 510 - parseInt(this.value);
+					speedValue.textContent = dotGenerationSpeed;
+
+					// Update the interval if currently raining
+					if (isRaining) {
+						clearInterval(rainInterval);
+						rainInterval = setInterval(addRandomDot, dotGenerationSpeed);
+					}
+				});
+
+				// Handle window resize
+				window.addEventListener('resize', function () {
+					const containerWidth = document.querySelector('.canvas-container').clientWidth - 20;
+					const containerHeight = window.innerHeight - 180;
+					const newCanvasSize = Math.min(containerWidth, containerHeight, 900);
+
+					// Only resize if significantly different
+					if (Math.abs(newCanvasSize - width) > 50) {
+						resizeCanvas(newCanvasSize, newCanvasSize);
+					}
+				});
+			}
+
+			function draw() {
+				background(255);
+
+				// Draw canvas border
+				stroke(0);
+				strokeWeight(2);
+				noFill();
+
+				// Draw inscribing square if circle exists
+				if (circle.exists) {
+					// Draw the inscribing square
+					stroke(100, 100, 100);
+					strokeWeight(2);
+					noFill();
+					rect(
+						circle.x - circle.radius,
+						circle.y - circle.radius,
+						circle.radius * 2,
+						circle.radius * 2
+					);
+
+					// Draw circle
+					stroke(0, 100, 255);
+					strokeWeight(3);
+					noFill();
+					ellipse(circle.x, circle.y, circle.radius * 2);
+				}
+
+				// Draw temporary circle and square while dragging
+				if (isDragging) {
+					let tempRadius = dist(startX, startY, mouseX, mouseY);
+
+					// Calculate maximum allowed radius for constraint
+					const maxRadius = Math.min(
+						startX, // Distance to left edge
+						width - startX, // Distance to right edge
+						startY, // Distance to top edge
+						height - startY // Distance to bottom edge
+					);
+
+					// Constrain the temporary radius
+					tempRadius = Math.min(tempRadius, maxRadius);
+
+					// Temporary square
+					stroke(100, 100, 100, 100);
+					strokeWeight(2);
+					noFill();
+					rect(startX - tempRadius, startY - tempRadius, tempRadius * 2, tempRadius * 2);
+
+					// Temporary circle
+					stroke(0, 100, 255, 100);
+					strokeWeight(2);
+					noFill();
+					ellipse(startX, startY, tempRadius * 2);
+				}
+
+				// Draw all dots with three different colors
+				for (let dot of dots) {
+					noStroke();
+					if (dot.type === 'insideCircle') {
+						fill(255, 0, 0); // Red for inside circle
+					} else if (dot.type === 'insideSquareOnly') {
+						fill(255, 200, 0); // Yellow/Orange for inside square but outside circle
+					} else {
+						fill(0, 0, 255); // Blue for outside square
+					}
+					ellipse(dot.x, dot.y, 6);
+				}
+
+				// Draw instructions if no circle exists
+				if (!circle.exists && !isDragging) {
+					fill(100);
+					textAlign(CENTER, CENTER);
+					textSize(16);
+					text('Drag to create a circle', width / 2, height / 2);
+				}
+			}
+
+			function mousePressed() {
+				if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+					isDragging = true;
+					startX = mouseX;
+					startY = mouseY;
+				}
+			}
+
+			function mouseReleased() {
+				if (isDragging) {
+					isDragging = false;
+					let radius = dist(startX, startY, mouseX, mouseY);
+
+					// Calculate maximum allowed radius to keep inscribing square within canvas
+					const maxRadius = Math.min(
+						startX, // Distance to left edge
+						width - startX, // Distance to right edge
+						startY, // Distance to top edge
+						height - startY // Distance to bottom edge
+					);
+
+					// Constrain radius to maximum allowed and minimum of 10
+					radius = Math.min(radius, maxRadius);
+
+					if (radius > 10) {
+						// Minimum radius
+						circle = {
+							x: startX,
+							y: startY,
+							radius: radius,
+							exists: true
+						};
+
+						// Reset dots and statistics when new circle is created
+						resetStatistics();
+					}
+				}
+			}
+
+			function toggleRain() {
+				const button = document.getElementById('rainButton');
+
+				if (!isRaining) {
+					if (!circle.exists) {
+						alert('Please create a circle first by dragging on the canvas!');
+						return;
+					}
+
+					isRaining = true;
+					button.textContent = 'Stop Raining Dots';
+					button.classList.add('active');
+
+					// Start the rain interval with current speed
+					rainInterval = setInterval(addRandomDot, dotGenerationSpeed);
+				} else {
+					isRaining = false;
+					button.textContent = 'Start Raining Dots';
+					button.classList.remove('active');
+
+					// Stop the rain interval
+					clearInterval(rainInterval);
+				}
+			}
+
+			function addRandomDot() {
+				if (!circle.exists) return;
+
+				// Generate random position within canvas
+				let dotX = random(0, width);
+				let dotY = random(0, height);
+
+				// Check if dot is inside the circle
+				let distanceToCenter = dist(dotX, dotY, circle.x, circle.y);
+				let insideCircle = distanceToCenter <= circle.radius;
+
+				// Check if dot is inside the inscribing square
+				let insideSquare =
+					dotX >= circle.x - circle.radius &&
+					dotX <= circle.x + circle.radius &&
+					dotY >= circle.y - circle.radius &&
+					dotY <= circle.y + circle.radius;
+
+				// Determine dot type
+				let dotType;
+				if (insideCircle) {
+					dotType = 'insideCircle';
+					dotsInsideCircle++;
+				} else if (insideSquare) {
+					dotType = 'insideSquareOnly';
+					dotsInsideSquareOnly++;
+				} else {
+					dotType = 'outsideSquare';
+					dotsOutsideSquare++;
+				}
+
+				// Add dot to array
+				dots.push({
+					x: dotX,
+					y: dotY,
+					type: dotType
+				});
+
+				updateStatistics();
+			}
+
+			function updateStatistics() {
+				const totalDots = dotsInsideCircle + dotsInsideSquareOnly + dotsOutsideSquare;
+				const dotsInSquare = dotsInsideCircle + dotsInsideSquareOnly;
+				const ratio = dotsInSquare > 0 ? (dotsInsideCircle / dotsInSquare).toFixed(4) : 0;
+
+				// Pi estimation using Monte Carlo method with inscribing square
+				// Pi ≈ 4 * (dots inside circle / dots inside square)
+				// This works because the ratio of circle area to square area is π/4
+				const piEstimate = dotsInSquare > 0 ? (4 * dotsInsideCircle) / dotsInSquare : 0;
+
+				// Update HTML elements
+				document.getElementById('dotsInsideCircle').textContent = dotsInsideCircle;
+				document.getElementById('dotsInsideSquareOnly').textContent = dotsInsideSquareOnly;
+				document.getElementById('dotsOutsideSquare').textContent = dotsOutsideSquare;
+				document.getElementById('dotsInSquare').textContent = dotsInSquare;
+				document.getElementById('totalDots').textContent = totalDots;
+				document.getElementById('ratio').textContent = ratio;
+				document.getElementById('piEstimate').textContent = piEstimate.toFixed(4);
+
+				// Update the big pi display
+				document.getElementById('piDisplayValue').textContent = piEstimate.toFixed(4);
+			}
+
+			function resetStatistics() {
+				dots = [];
+				dotsInsideCircle = 0;
+				dotsInsideSquareOnly = 0;
+				dotsOutsideSquare = 0;
+				updateStatistics();
+			}
+
+			// Reset everything when page loads
+			function resetAll() {
+				circle = { x: 0, y: 0, radius: 0, exists: false };
+				resetStatistics();
+
+				if (isRaining) {
+					toggleRain();
+				}
+			}
+		</script>
+	</body>
+</html>

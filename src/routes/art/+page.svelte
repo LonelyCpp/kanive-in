@@ -8,6 +8,7 @@
 
 	<div class="tools-container">
 		<ArtCard title="Tree" link="/art/tree" />
+		<ArtCard title="Pi" link="/art/monte-carlo-pi" />
 	</div>
 </div>
 
