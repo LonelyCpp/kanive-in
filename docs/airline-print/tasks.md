@@ -21,5 +21,8 @@
 - [ ] Hide navbar on this page (deferred — navbar hidden in print CSS; on-screen nav aids navigation)
 - [x] Add page entry to `/tools` listing (`src/routes/tools/+page.svelte`)
 - [x] Add `<svelte:head>` with page title "Airline Print — Tools"
+- [x] Add Reset button with confirm dialog
+- [x] Add JSON upload import
+- [x] Add LLM extraction prompt helper with copy button
 - [ ] Test print output on A4 and Letter paper sizes
 - [ ] Manual QA: fill form, verify preview, download PDF, reload page, verify restore

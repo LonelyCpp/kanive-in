@@ -117,3 +117,21 @@
 **Decision:** Add an optional `arrivalDate` field to each flight. If blank, the ticket preview falls back to the departure `date` for the arrival side, preserving existing behavior. The form shows "Arrival Date" side-by-side with "Date" in the flight block.
 
 **Why:** Red-eye and long-haul flights often land on the day after departure (d+1). Previously the arrival side showed the same date as departure, which was incorrect for these flights. Adding an optional field keeps backward compatibility with saved bookings (missing field → undefined → falls back to departure date) while fixing the d+1 case when the user fills it in.
+
+## D19: Reset button
+
+**Decision:** Add a "Reset" button in the form toolbar that clears all fields back to the default state (1 passenger, 1 outbound flight, 0 return flights) after a `confirm()` dialog. Also clears localStorage.
+
+**Why:** Users need a quick way to start a new booking without manually deleting every field. The confirmation dialog prevents accidental data loss. Clearing localStorage ensures the reset persists on reload.
+
+## D20: JSON import via modal textarea
+
+**Decision:** Replace the file-input "Upload JSON" with an **Auto-fill** button that opens a modal containing a textarea for pasting JSON. Clicking Import validates the shape and loads it into the form. The modal also contains the LLM prompt section.
+
+**Why:** A textarea is more flexible than a file picker — users can paste JSON directly from an LLM chat without saving a file first. Putting both the JSON paste area and the LLM prompt in the same modal keeps the workflow in one place and declutters the form sidebar.
+
+## D21: LLM extraction prompt in modal
+
+**Decision:** Move the LLM prompt from an expandable sidebar section into the Auto-fill modal. The modal shows the JSON textarea at the top and the prompt (with Copy button) below a divider.
+
+**Why:** The prompt and JSON input are part of the same workflow — they belong together. Removing the expandable sidebar section simplifies the form layout and reduces cognitive load. Users who don't use the LLM feature never see it; those who do see everything they need in one dialog.

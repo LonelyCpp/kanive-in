@@ -16,8 +16,10 @@ A single-page tool at `/tools/airline-print` that:
 2. If saved data exists in localStorage, form auto-fills with last booking
 3. If no saved data: form starts with **1 passenger, 1 outbound flight, 0 return flights**
 4. User fills in form fields; ticket preview updates live on the right
-5. User clicks **Download PDF** → browser print dialog opens (save as PDF)
-6. Every time the form changes, data is saved to localStorage
+5. Optional: User clicks **Auto-fill** to open a modal. They can paste JSON directly, or copy the LLM prompt, paste it with their booking confirmation into any LLM, then paste the resulting JSON back into the modal and click Import
+6. User clicks **Download PDF** → browser print dialog opens (save as PDF)
+7. Every time the form changes, data is saved to localStorage
+8. User clicks **Reset** to clear everything and start fresh
 
 ## Data Model
 
@@ -218,14 +220,15 @@ Side-by-side on desktop: form sidebar (420px, scrollable, sticky) on the left, t
 
 Form sections:
 
-1. Booking details
-2. Airline details (name, logo upload, contact)
-3. Aggregator details (name, logo upload, contact)
-4. Passengers with Add/Remove
-5. Outbound flights with Add/Remove (includes seat inputs per passenger)
-6. Return flights with Add/Remove
-7. Total cost
-8. Download PDF button
+1. Toolbar — Auto-fill (opens modal) + Reset buttons
+2. Booking details
+3. Airline details (name, logo upload, contact)
+4. Aggregator details (name, logo upload, contact)
+5. Passengers with Add/Remove
+6. Outbound flights with Add/Remove (includes seat inputs per passenger)
+7. Return flights with Add/Remove
+8. Total cost
+9. Download PDF button
 
 Logo upload: FileReader → canvas resize (max 200px) → PNG data URL (preserves transparency). SVG files bypass canvas and are stored as raw SVG data URLs.
 
@@ -249,6 +252,9 @@ Logo upload: FileReader → canvas resize (max 200px) → PNG data URL (preserve
 - localStorage persistence
 - Empty field omission
 - Responsive layout (desktop first, mobile stacks)
+- JSON import / upload
+- Reset to defaults
+- LLM extraction prompt helper
 
 ## Out of Scope
 

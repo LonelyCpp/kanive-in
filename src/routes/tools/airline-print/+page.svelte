@@ -6,6 +6,67 @@
 	const CURRENCIES = ['INR', 'USD', 'EUR', 'GBP', 'AED', 'SGD'];
 	const PASSENGER_TYPES = ['Adult', 'Child', 'Infant'];
 
+	const LLM_PROMPT = `You are a data extraction assistant. I will provide a flight booking confirmation (as text or an image). Extract all available details and output them as a single JSON object in the following exact structure. Use empty strings for missing fields. Do not include markdown code blocks around the JSON.
+
+{
+  "bookingId": "",
+  "pnr": "",
+  "currency": "INR",
+  "costAmount": "",
+  "airline": {
+    "name": "",
+    "logo": "",
+    "phone": "",
+    "email": "",
+    "website": "",
+    "address": ""
+  },
+  "aggregator": {
+    "name": "",
+    "logo": "",
+    "phone": "",
+    "email": "",
+    "website": "",
+    "address": ""
+  },
+  "passengers": [
+    {
+      "name": "",
+      "type": "Adult",
+      "eTicketNumber": ""
+    }
+  ],
+  "outboundFlights": [
+    {
+      "flightNumber": "",
+      "origin": "",
+      "originCode": "",
+      "destination": "",
+      "destinationCode": "",
+      "date": "",
+      "arrivalDate": "",
+      "departureTime": "",
+      "arrivalTime": "",
+      "duration": "",
+      "originTerminal": "",
+      "destinationTerminal": "",
+      "class": "",
+      "passengerSeats": [""]
+    }
+  ],
+  "returnFlights": []
+}
+
+Rules:
+- passenger.type must be one of: Adult, Child, Infant
+- currency must be one of: INR, USD, EUR, GBP, AED, SGD
+- date, arrivalDate must be in YYYY-MM-DD format
+- departureTime, arrivalTime must be in 24-hour HH:MM format
+- passengerSeats array length must match the number of passengers; use empty strings for unknown seats
+- If there are return flights, add them to returnFlights with the same structure
+- For connecting flights, add multiple flight objects to outboundFlights or returnFlights
+- Do not hallucinate data. If a field is not present in the source, use an empty string.`;
+
 	interface Passenger {
 		name: string;
 		type: string;
@@ -96,6 +157,9 @@
 
 	let mounted = $state(false);
 	let saveTimeout: ReturnType<typeof setTimeout>;
+	let showModal = $state(false);
+	let jsonInput = $state('');
+	let promptCopied = $state(false);
 
 	function addPassenger() {
 		booking.passengers.push(createEmptyPassenger());
@@ -222,6 +286,54 @@
 		window.print();
 	}
 
+	function resetBooking() {
+		if (!confirm('Clear all details and start fresh?')) return;
+		booking = {
+			bookingId: '',
+			pnr: '',
+			currency: 'INR',
+			costAmount: '',
+			airline: createEmptyContact(),
+			aggregator: createEmptyContact(),
+			passengers: [createEmptyPassenger()],
+			outboundFlights: [{ ...createEmptyFlight(), passengerSeats: [''] }],
+			returnFlights: []
+		};
+		saveToLocalStorage();
+	}
+
+	function importJson(): void {
+		if (!jsonInput.trim()) return;
+		try {
+			const parsed = JSON.parse(jsonInput);
+			if (
+				parsed &&
+				typeof parsed === 'object' &&
+				Array.isArray(parsed.passengers) &&
+				Array.isArray(parsed.outboundFlights)
+			) {
+				booking = parsed as Booking;
+				saveToLocalStorage();
+				jsonInput = '';
+				showModal = false;
+			} else {
+				alert('Invalid JSON format. Expected an airline booking object.');
+			}
+		} catch {
+			alert('Could not parse the JSON. Check for syntax errors.');
+		}
+	}
+
+	async function copyPrompt() {
+		try {
+			await navigator.clipboard.writeText(LLM_PROMPT);
+			promptCopied = true;
+			setTimeout(() => (promptCopied = false), 2000);
+		} catch {
+			// silently ignore copy failures
+		}
+	}
+
 	onMount(() => {
 		const saved = loadFromLocalStorage();
 		if (saved) {
@@ -287,6 +399,13 @@
 <div class="app-layout">
 	<div class="form-sidebar" oninput={scheduleSave}>
 		<h2>Booking Details</h2>
+
+		<div class="form-toolbar">
+			<button type="button" class="btn-secondary" onclick={() => (showModal = true)}>
+				Auto-fill
+			</button>
+			<button type="button" class="btn-secondary" onclick={resetBooking}>Reset</button>
+		</div>
 
 		<section class="form-section">
 			<h3>Booking Reference</h3>
@@ -645,6 +764,53 @@
 			</div>
 		</section>
 
+		{#if showModal}
+			<div
+				class="modal-backdrop"
+				role="presentation"
+				onclick={(e) => {
+					if (e.target === e.currentTarget) showModal = false;
+				}}
+			>
+				<div class="modal-card">
+					<div class="modal-header">
+						<h3>Auto-fill Booking</h3>
+						<button type="button" class="btn-remove" onclick={() => (showModal = false)}
+							>&times;</button
+						>
+					</div>
+
+					<section class="modal-section">
+						<p class="helper-text">
+							Paste JSON extracted from your booking confirmation below, then click Import.
+						</p>
+						<textarea
+							class="prompt-textarea"
+							bind:value={jsonInput}
+							placeholder="Paste JSON here..."
+							rows={8}
+						></textarea>
+						<button type="button" class="btn-secondary btn-copy" onclick={importJson}>
+							Import JSON
+						</button>
+					</section>
+
+					<div class="modal-divider"></div>
+
+					<section class="modal-section">
+						<p class="helper-text">
+							No JSON yet? Copy the prompt below and paste it into any LLM along with your booking
+							confirmation. Save the JSON reply, then paste it above.
+						</p>
+						<textarea class="prompt-textarea" readonly value={LLM_PROMPT} rows={10}></textarea>
+						<button type="button" class="btn-secondary btn-copy" onclick={copyPrompt}>
+							{promptCopied ? 'Copied!' : 'Copy Prompt'}
+						</button>
+					</section>
+				</div>
+			</div>
+		{/if}
+
 		<div class="form-actions">
 			<button type="button" class="btn-print" onclick={printTicket}> Download PDF </button>
 		</div>
@@ -715,7 +881,7 @@
 									{#if isNonEmpty(flight.originCode) || isNonEmpty(flight.originTerminal)}
 										<span class="value-mono"
 											>{#if isNonEmpty(flight.originCode)}{flight.originCode}{/if}{#if isNonEmpty(flight.originCode) && isNonEmpty(flight.originTerminal)}
-												&nbsp;|&nbsp;{/if}{#if isNonEmpty(flight.originTerminal)}{flight.originTerminal}{/if}</span
+												&nbsp;&#183;&nbsp;{/if}{#if isNonEmpty(flight.originTerminal)}{flight.originTerminal}{/if}</span
 										>
 									{/if}
 									{#if isNonEmpty(flight.departureTime)}
@@ -749,7 +915,7 @@
 									{#if isNonEmpty(flight.destinationCode) || isNonEmpty(flight.destinationTerminal)}
 										<span class="value-mono"
 											>{#if isNonEmpty(flight.destinationCode)}{flight.destinationCode}{/if}{#if isNonEmpty(flight.destinationCode) && isNonEmpty(flight.destinationTerminal)}
-												&nbsp;|&nbsp;{/if}{#if isNonEmpty(flight.destinationTerminal)}{flight.destinationTerminal}{/if}</span
+												&nbsp;&#183;&nbsp;{/if}{#if isNonEmpty(flight.destinationTerminal)}{flight.destinationTerminal}{/if}</span
 										>
 									{/if}
 									{#if isNonEmpty(flight.arrivalTime)}
@@ -787,7 +953,7 @@
 									{#if isNonEmpty(flight.originCode) || isNonEmpty(flight.originTerminal)}
 										<span class="value-mono"
 											>{#if isNonEmpty(flight.originCode)}{flight.originCode}{/if}{#if isNonEmpty(flight.originCode) && isNonEmpty(flight.originTerminal)}
-												&nbsp;|&nbsp;{/if}{#if isNonEmpty(flight.originTerminal)}{flight.originTerminal}{/if}</span
+												&nbsp;&#183;&nbsp;{/if}{#if isNonEmpty(flight.originTerminal)}{flight.originTerminal}{/if}</span
 										>
 									{/if}
 									{#if isNonEmpty(flight.departureTime)}
@@ -821,7 +987,7 @@
 									{#if isNonEmpty(flight.destinationCode) || isNonEmpty(flight.destinationTerminal)}
 										<span class="value-mono"
 											>{#if isNonEmpty(flight.destinationCode)}{flight.destinationCode}{/if}{#if isNonEmpty(flight.destinationCode) && isNonEmpty(flight.destinationTerminal)}
-												&nbsp;|&nbsp;{/if}{#if isNonEmpty(flight.destinationTerminal)}{flight.destinationTerminal}{/if}</span
+												&nbsp;&#183;&nbsp;{/if}{#if isNonEmpty(flight.destinationTerminal)}{flight.destinationTerminal}{/if}</span
 										>
 									{/if}
 									{#if isNonEmpty(flight.arrivalTime)}
@@ -942,6 +1108,7 @@
 		position: sticky;
 		top: 84px;
 		padding-right: 8px;
+		z-index: 2;
 	}
 
 	.form-sidebar h2 {
@@ -1114,6 +1281,19 @@
 		min-width: 44px;
 	}
 
+	/* ── Form Toolbar ── */
+
+	.form-toolbar {
+		display: flex;
+		gap: 8px;
+		margin-bottom: 16px;
+	}
+
+	.form-toolbar .btn-secondary {
+		flex: 1;
+		text-align: center;
+	}
+
 	/* ── Action Buttons ── */
 
 	.form-actions {
@@ -1137,6 +1317,97 @@
 
 	.btn-print:hover {
 		opacity: 0.9;
+	}
+
+	.btn-secondary {
+		padding: 6px 12px;
+		background: none;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		font-size: 0.85em;
+		font-family: inherit;
+		color: var(--on-surface-light-color);
+		cursor: pointer;
+	}
+
+	.btn-secondary:hover {
+		border-color: #888;
+		color: var(--on-surface-color);
+	}
+
+	.helper-text {
+		font-size: 0.8em;
+		color: var(--on-surface-light-color);
+		margin: 0 0 8px 0;
+		line-height: 1.4;
+	}
+
+	.prompt-textarea {
+		width: 100%;
+		padding: 8px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		font-size: 0.78em;
+		font-family: 'JetBrains Mono', 'Courier New', monospace;
+		background: #fafafa;
+		color: var(--on-surface-color);
+		resize: vertical;
+		box-sizing: border-box;
+		margin-bottom: 6px;
+	}
+
+	.btn-copy {
+		width: 100%;
+	}
+
+	/* ── Modal ── */
+
+	.modal-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+		padding: 16px;
+	}
+
+	.modal-card {
+		background: #fff;
+		border-radius: 6px;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+		width: 100%;
+		max-width: 520px;
+		max-height: 85vh;
+		overflow-y: auto;
+		padding: 20px;
+	}
+
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+	}
+
+	.modal-header h3 {
+		margin: 0;
+		font-size: 1em;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--on-surface-light-color);
+	}
+
+	.modal-section {
+		margin-bottom: 12px;
+	}
+
+	.modal-divider {
+		height: 0;
+		border: none;
+		border-top: 1px solid #e0e0e0;
+		margin: 12px 0;
 	}
 
 	/* ── Preview Panel ── */
