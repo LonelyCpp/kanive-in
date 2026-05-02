@@ -1,8 +1,9 @@
 <script>
 	import ToolsCard from './components/ToolsCard.svelte';
+	import PageWrapper from '../components/PageWrapper.svelte';
 </script>
 
-<div class="container">
+<PageWrapper>
 	<h1>Tools</h1>
 	<p>Handy tools that I've created to make life easier</p>
 
@@ -28,10 +29,10 @@
 			link="/tools/airline-print"
 		/>
 	</div>
-</div>
+</PageWrapper>
 
 <style>
-	.container {
+	h1 {
 		margin-top: 48px;
 	}
 

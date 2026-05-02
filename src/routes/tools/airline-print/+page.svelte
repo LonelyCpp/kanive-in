@@ -824,6 +824,7 @@
 		grid-template-columns: 420px 1fr;
 		gap: 32px;
 		align-items: start;
+		width: 100%;
 		min-height: calc(100vh - 60px);
 		padding: 24px 0;
 	}
@@ -1319,17 +1320,18 @@
 			background: #fff !important;
 		}
 
-		:global(.main),
-		:global(.navbar),
 		:global(nav),
-		.form-sidebar,
-		.app-layout {
+		.form-sidebar {
 			display: none !important;
+		}
+
+		.app-layout {
+			display: block !important;
+			padding: 0 !important;
 		}
 
 		.preview-panel {
 			position: static !important;
-			display: block !important;
 			top: auto !important;
 		}
 

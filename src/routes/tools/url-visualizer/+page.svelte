@@ -1,4 +1,6 @@
 <script lang="ts">
+	import PageWrapper from '../../components/PageWrapper.svelte';
+
 	let urlInput = '';
 
 	function parseURL(url: string) {
@@ -38,7 +40,7 @@
 	/>
 </svelte:head>
 
-<div>
+<PageWrapper>
 	<div class="hero">
 		<h1 class="title">See what's inside your web link</h1>
 		<input type="text" class="url-input" bind:value={urlInput} />
@@ -107,7 +109,7 @@
 			{/if}
 		</div>
 	{/if}
-</div>
+</PageWrapper>
 
 <style>
 	.hero {

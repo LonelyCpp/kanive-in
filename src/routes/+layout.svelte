@@ -13,9 +13,7 @@
 	<NavbarMain />
 
 	<div class="body">
-		<div class="container">
-			{@render children()}
-		</div>
+		{@render children()}
 	</div>
 </div>
 
@@ -40,14 +38,5 @@
 		flex-direction: column;
 		align-items: center;
 		background-color: var(--background-color);
-	}
-
-	.container {
-		display: flex;
-		width: 100%;
-		height: 100%;
-		flex-direction: column;
-		max-width: 720px;
-		margin-bottom: 32px;
 	}
 </style>

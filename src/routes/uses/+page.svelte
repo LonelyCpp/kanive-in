@@ -1,9 +1,13 @@
+<script>
+	import PageWrapper from '../components/PageWrapper.svelte';
+</script>
+
 <svelte:head>
 	<title>Ananthu Uses</title>
 	<meta name="description" content="Ananthu's uses page" />
 </svelte:head>
 
-<div class="container">
+<PageWrapper>
 	<h1>Uses</h1>
 
 	<h3>Hardware</h3>
@@ -21,14 +25,14 @@
 		<li>Next.js</li>
 		<li>Chrome</li>
 	</ul>
-</div>
+</PageWrapper>
 
 <style>
 	h3 {
 		margin: 0;
 	}
 
-	.container {
+	h1 {
 		margin-top: 48px;
 	}
 

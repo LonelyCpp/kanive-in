@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import PageWrapper from '../../components/PageWrapper.svelte';
 
 	let link = '';
 	let ofl = '';
@@ -125,7 +126,7 @@
 	<meta name="description" content="Link Generator for smallcase apps" />
 </svelte:head>
 
-<div class="container">
+<PageWrapper>
 	<h2>Link Generator</h2>
 
 	<form onsubmit={generateLink}>
@@ -194,10 +195,10 @@
 	{#if errorMessage}
 		<p id="error-message">{errorMessage}</p>
 	{/if}
-</div>
+</PageWrapper>
 
 <style>
-	.container {
+	h2 {
 		margin-top: 48px;
 	}
 

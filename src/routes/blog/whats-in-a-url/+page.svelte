@@ -2,6 +2,7 @@
 	import { BASE_URL } from '$lib/constants';
 	import SocialHeaders from '../../../components/SocialHeaders.svelte';
 	import BlogHero from '../components/BlogHero.svelte';
+	import PageWrapper from '../../components/PageWrapper.svelte';
 </script>
 
 <SocialHeaders
@@ -10,7 +11,7 @@
 	image_filename="what-in-a-url-og.png"
 />
 
-<div>
+<PageWrapper>
 	<BlogHero title="What's in a URL?" subtitle="A short break down of the components of a URL" />
 
 	<div class="content-container">
@@ -128,7 +129,7 @@
 			</p>
 		</div>
 	</div>
-</div>
+</PageWrapper>
 
 <style>
 	@media (max-width: 1000px) {

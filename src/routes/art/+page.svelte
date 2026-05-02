@@ -1,8 +1,9 @@
 <script>
 	import ArtCard from './components/ArtCard.svelte';
+	import PageWrapper from '../components/PageWrapper.svelte';
 </script>
 
-<div class="container">
+<PageWrapper>
 	<h1>Art</h1>
 	<p>Generative art that I've created</p>
 
@@ -10,10 +11,10 @@
 		<ArtCard title="Tree" link="/art/tree" />
 		<ArtCard title="Pi" link="/art/monte-carlo-pi" />
 	</div>
-</div>
+</PageWrapper>
 
 <style>
-	.container {
+	h1 {
 		margin-top: 48px;
 	}
 
