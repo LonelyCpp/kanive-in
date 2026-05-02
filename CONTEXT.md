@@ -7,7 +7,7 @@
 | **Booking**              | A single flight reservation from an aggregator. Contains passengers, flights, airline info, aggregator info, and total cost. One booking at a time.                         |
 | **Passenger**            | A person traveling. Has a name, type (Adult/Child/Infant), and one e-Ticket number covering all flights.                                                                    |
 | **e-Ticket number**      | Per-passenger document identifier. Shown next to the passenger on every flight.                                                                                             |
-| **Flight**               | A travel segment (origin → destination) with flight number, date, departure/arrival times, duration, terminal, and class. Belongs to either the Outbound or Return section. |
+| **Flight**               | A travel segment with flight number, origin/destination (city + IATA code + terminal), date, departure/arrival times, duration, and class. Belongs to the Outbound or Return section. |
 | **Seat number**          | Per passenger × per flight. Assigned seat on a specific flight segment.                                                                                                     |
 | **Outbound**             | One-way or outward journey. Contains 1+ flight segments.                                                                                                                    |
 | **Return**               | Journey back. Contains 1+ flight segments. Optional — omitted if none.                                                                                                      |
