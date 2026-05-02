@@ -22,49 +22,53 @@ A single-page tool at `/tools/airline-print` that:
 ## Data Model
 
 ### Booking
-| Field | Type | Notes |
-|-------|------|-------|
-| Booking ID | string | free text |
-| PNR | string | free text |
-| Total cost (currency) | select | INR, USD, EUR, GBP, AED, SGD |
-| Total cost (amount) | number | numeric |
-| Airline name | string | |
-| Airline logo | image (FileReader → data URL) | compressed to ≤200×200px |
-| Airline phone | string | |
-| Airline email | string | |
-| Airline website | string | |
-| Airline address | string | |
-| Aggregator name | string | |
-| Aggregator logo | image (FileReader → data URL) | compressed to ≤200×200px |
-| Aggregator phone | string | |
-| Aggregator email | string | |
-| Aggregator website | string | |
-| Aggregator address | string | |
+
+| Field                 | Type                          | Notes                        |
+| --------------------- | ----------------------------- | ---------------------------- |
+| Booking ID            | string                        | free text                    |
+| PNR                   | string                        | free text                    |
+| Total cost (currency) | select                        | INR, USD, EUR, GBP, AED, SGD |
+| Total cost (amount)   | number                        | numeric                      |
+| Airline name          | string                        |                              |
+| Airline logo          | image (FileReader → data URL) | compressed to ≤200×200px     |
+| Airline phone         | string                        |                              |
+| Airline email         | string                        |                              |
+| Airline website       | string                        |                              |
+| Airline address       | string                        |                              |
+| Aggregator name       | string                        |                              |
+| Aggregator logo       | image (FileReader → data URL) | compressed to ≤200×200px     |
+| Aggregator phone      | string                        |                              |
+| Aggregator email      | string                        |                              |
+| Aggregator website    | string                        |                              |
+| Aggregator address    | string                        |                              |
 
 ### Passenger (per booking, list)
-| Field | Type | Notes |
-|-------|------|-------|
-| Name | string | |
-| Type | select | Adult / Child / Infant |
+
+| Field           | Type   | Notes                                 |
+| --------------- | ------ | ------------------------------------- |
+| Name            | string |                                       |
+| Type            | select | Adult / Child / Infant                |
 | e-Ticket number | string | one per passenger, covers all flights |
 
 ### Flight (list, grouped as Outbound / Return)
-| Field | Type | Notes |
-|-------|------|-------|
-| Flight number | string | e.g. 6E-123 |
-| Origin | string | airport/city |
-| Destination | string | airport/city |
-| Date | date | |
-| Departure time | time | 24-hour |
-| Arrival time | time | 24-hour, independent of duration |
-| Duration | string | free text, e.g. "2h 30m" |
-| Terminal | string | |
-| Class | string | free text, e.g. Economy / Business |
+
+| Field          | Type   | Notes                              |
+| -------------- | ------ | ---------------------------------- |
+| Flight number  | string | e.g. 6E-123                        |
+| Origin         | string | airport/city                       |
+| Destination    | string | airport/city                       |
+| Date           | date   |                                    |
+| Departure time | time   | 24-hour                            |
+| Arrival time   | time   | 24-hour, independent of duration   |
+| Duration       | string | free text, e.g. "2h 30m"           |
+| Terminal       | string |                                    |
+| Class          | string | free text, e.g. Economy / Business |
 
 ### Seat number (per passenger × flight)
-| Field | Type | Notes |
-|-------|------|-------|
-| Seat | string | free text, e.g. "12A" |
+
+| Field | Type   | Notes                 |
+| ----- | ------ | --------------------- |
+| Seat  | string | free text, e.g. "12A" |
 
 ## Relationships
 
@@ -80,6 +84,7 @@ Booking
 ## "Empty field → remove element" Rule
 
 Any field left blank in the form is omitted from the ticket preview. Examples:
+
 - No return flights → Return section not shown
 - Passenger name blank → that passenger not listed
 - Terminal blank → terminal not shown for that flight
@@ -106,6 +111,7 @@ Minimal typographic style: strong heading hierarchy, serif headers, ample whites
 Side-by-side on desktop (form left, preview right). Form is scrollable independently. At widths ≤720px, stack vertically (form above, preview below).
 
 Form sections:
+
 1. Booking details
 2. Airline details (with logo upload)
 3. Aggregator details (with logo upload)

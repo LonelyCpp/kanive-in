@@ -22,6 +22,11 @@
 			description="Test out the image matrix CSS"
 			link="/tools/image-matrix-css"
 		/>
+		<ToolsCard
+			title="Airline Print"
+			description="Generate beautiful, print-friendly flight reservation tickets"
+			link="/tools/airline-print"
+		/>
 	</div>
 </div>
 
