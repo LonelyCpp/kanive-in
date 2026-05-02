@@ -55,6 +55,7 @@
 **Why:** The original "minimal typographic" direction was too generic. The user specified a detailed magazine-like aesthetic inspired by editorial layouts and vintage airline coupons. The three-typeface system creates clear information hierarchy — serif for display, sans for body, mono for machine codes. The paper palette (warm off-white, deep navy ink, brass accent) deliberately avoids looking like a UI or web page.
 
 **Sub-decisions:**
+
 - Fonts loaded from Google Fonts CDN with `preconnect` for performance
 - Playfair Display 600/700 for masthead, city names, total
 - Inter 400/500/600 for body, labels, contact info
@@ -110,3 +111,9 @@
 **Decision:** Each passenger has one e-Ticket number. Each passenger×flight combination has a seat number.
 
 **Why:** Matches how real airline tickets work — the e-Ticket number is a document that covers all flights for that passenger, while seat assignments are per flight segment. The user confirmed this model (Model A).
+
+## D18: Optional separate arrival date per flight
+
+**Decision:** Add an optional `arrivalDate` field to each flight. If blank, the ticket preview falls back to the departure `date` for the arrival side, preserving existing behavior. The form shows "Arrival Date" side-by-side with "Date" in the flight block.
+
+**Why:** Red-eye and long-haul flights often land on the day after departure (d+1). Previously the arrival side showed the same date as departure, which was incorrect for these flights. Adding an optional field keeps backward compatibility with saved bookings (missing field → undefined → falls back to departure date) while fixing the d+1 case when the user fills it in.

@@ -46,11 +46,11 @@ docs/              # feature specs (see below)
 
 ```json
 {
-  "useTabs": true,
-  "singleQuote": true,
-  "trailingComma": "none",
-  "printWidth": 100,
-  "plugins": ["prettier-plugin-svelte"]
+	"useTabs": true,
+	"singleQuote": true,
+	"trailingComma": "none",
+	"printWidth": 100,
+	"plugins": ["prettier-plugin-svelte"]
 }
 ```
 

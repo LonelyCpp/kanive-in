@@ -52,20 +52,21 @@ A single-page tool at `/tools/airline-print` that:
 
 ### Flight (list, grouped as Outbound / Return)
 
-| Field               | Type   | Notes                            |
-| ------------------- | ------ | -------------------------------- |
-| Flight number       | string | e.g. 6E-123                      |
-| Origin              | string | city/airport name                |
-| Origin code         | string | IATA code, e.g. BLR              |
-| Destination         | string | city/airport name                |
-| Destination code    | string | IATA code, e.g. DEL              |
-| Date                | date   |                                  |
-| Departure time      | time   | 24-hour                          |
-| Arrival time        | time   | 24-hour, independent of duration |
-| Duration            | string | free text, e.g. "2h 30m"         |
-| Origin terminal     | string | e.g. T1                          |
-| Destination terminal| string | e.g. T3                          |
-| Class               | string | free text, e.g. Economy          |
+| Field                | Type   | Notes                                           |
+| -------------------- | ------ | ----------------------------------------------- |
+| Flight number        | string | e.g. 6E-123                                     |
+| Origin               | string | city/airport name                               |
+| Origin code          | string | IATA code, e.g. BLR                             |
+| Destination          | string | city/airport name                               |
+| Destination code     | string | IATA code, e.g. DEL                             |
+| Date                 | date   | departure date                                  |
+| Arrival date         | date   | optional; falls back to departure date if blank |
+| Departure time       | time   | 24-hour                                         |
+| Arrival time         | time   | 24-hour, independent of duration                |
+| Duration             | string | free text, e.g. "2h 30m"                        |
+| Origin terminal      | string | e.g. T1                                         |
+| Destination terminal | string | e.g. T3                                         |
+| Class                | string | free text, e.g. Economy                         |
 
 ### Seat number (per passenger × flight)
 
@@ -102,11 +103,11 @@ Any field left blank in the form is omitted from the ticket preview. No validati
 
 Three-typeface system loaded from Google Fonts (`<link>` in `<svelte:head>`):
 
-| Typeface         | Usage                                          | Weights        |
-| ---------------- | ---------------------------------------------- | -------------- |
-| **Playfair Display** | Masthead, city names, total fare           | 600, 700       |
-| **Inter**            | Body copy, labels, passenger names, contacts | 400, 500, 600  |
-| **JetBrains Mono**   | PNR, Booking ID, flight number, e-ticket, seat, IATA codes | 400, 500 |
+| Typeface             | Usage                                                      | Weights       |
+| -------------------- | ---------------------------------------------------------- | ------------- |
+| **Playfair Display** | Masthead, city names, total fare                           | 600, 700      |
+| **Inter**            | Body copy, labels, passenger names, contacts               | 400, 500, 600 |
+| **JetBrains Mono**   | PNR, Booking ID, flight number, e-ticket, seat, IATA codes | 400, 500      |
 
 Hierarchy is built through font + weight + size, not color:
 
@@ -119,14 +120,14 @@ Hierarchy is built through font + weight + size, not color:
 
 CSS custom properties scoped to `.ticket`:
 
-| Variable         | Value                | Usage                         |
-| ---------------- | -------------------- | ----------------------------- |
-| `--paper`        | `hsl(36 30% 96%)`   | Ticket background             |
-| `--ink`          | `hsl(220 45% 12%)`  | Primary text (deep navy)      |
-| `--ink-soft`     | `hsl(220 20% 38%)`  | Secondary text                |
-| `--ink-muted`    | `hsl(220 15% 60%)`  | Captions, fine print          |
-| `--accent`       | `hsl(30 55% 45%)`   | Brass/ochre — plane icon only |
-| `--paper-edge`   | `hsl(36 15% 85%)`   | Borders, dotted lines         |
+| Variable       | Value              | Usage                         |
+| -------------- | ------------------ | ----------------------------- |
+| `--paper`      | `hsl(36 30% 96%)`  | Ticket background             |
+| `--ink`        | `hsl(220 45% 12%)` | Primary text (deep navy)      |
+| `--ink-soft`   | `hsl(220 20% 38%)` | Secondary text                |
+| `--ink-muted`  | `hsl(220 15% 60%)` | Captions, fine print          |
+| `--accent`     | `hsl(30 55% 45%)`  | Brass/ochre — plane icon only |
+| `--paper-edge` | `hsl(36 15% 85%)`  | Borders, dotted lines         |
 
 ### Surface
 
@@ -142,11 +143,11 @@ CSS custom properties scoped to `.ticket`:
 
 From `@iconify/svelte` (`mdi:` Material Design Icons), wrapped in `<span>` for scoped CSS:
 
-| Icon                        | Placement                              |
-| --------------------------- | -------------------------------------- |
-| `mdi:airplane`              | Center of each flight segment route    |
-| `mdi:ticket-confirmation-outline` | Top-right, next to PNR / Booking ID |
-| `mdi:seat-passenger`        | Next to seat assignments in passengers |
+| Icon                              | Placement                              |
+| --------------------------------- | -------------------------------------- |
+| `mdi:airplane`                    | Center of each flight segment route    |
+| `mdi:ticket-confirmation-outline` | Top-right, next to PNR / Booking ID    |
+| `mdi:seat-passenger`              | Next to seat assignments in passengers |
 
 ---
 
@@ -173,13 +174,13 @@ From `@iconify/svelte` (`mdi:` Material Design Icons), wrapped in `<span>` for s
 
 Each flight segment is a `grid-template-columns: 1fr auto 1fr`:
 
-| Left column (departure)      | Center (flight info)    | Right column (arrival)       |
-| ---------------------------- | ----------------------- | ---------------------------- |
-| `label`: "From"              | Plane icon w/ dashes    | `label`: "To"                |
-| `value-lg`: origin city      | `segment-duration`      | `value-lg`: destination city |
-| `value-mono`: ORIG \| T1     | `value-mono`: flight #  | `value-mono`: DEST \| T2     |
-| `segment-time-value`: 14:30  | `segment-class`         | `segment-time-value`: 16:30  |
-| `segment-time-date`: date    |                         | `segment-time-date`: date    |
+| Left column (departure)     | Center (flight info)   | Right column (arrival)       |
+| --------------------------- | ---------------------- | ---------------------------- |
+| `label`: "From"             | Plane icon w/ dashes   | `label`: "To"                |
+| `value-lg`: origin city     | `segment-duration`     | `value-lg`: destination city |
+| `value-mono`: ORIG \| T1    | `value-mono`: flight # | `value-mono`: DEST \| T2     |
+| `segment-time-value`: 14:30 | `segment-class`        | `segment-time-value`: 16:30  |
+| `segment-time-date`: date   |                        | `segment-time-date`: date    |
 
 - Airport codes and terminals displayed inline as `BLR | T2`.
 - Plane icon centered with short dashed lines (40px) on each side via `::before`/`::after` pseudo-elements.
@@ -216,6 +217,7 @@ No external PDF library. Zero dependencies.
 Side-by-side on desktop: form sidebar (420px, scrollable, sticky) on the left, ticket preview on the right. At widths ≤960px, stack vertically.
 
 Form sections:
+
 1. Booking details
 2. Airline details (name, logo upload, contact)
 3. Aggregator details (name, logo upload, contact)
@@ -256,7 +258,6 @@ Logo upload: FileReader → canvas resize (max 200px) → PNG data URL (preserve
 - Multi-airline bookings
 - Baggage details
 - Gate info
-- Separate departure/arrival dates (single date field per flight)
 - Actual PDF blob download (uses browser print dialog)
 - Dark mode for the ticket preview
 - i18n / translations
