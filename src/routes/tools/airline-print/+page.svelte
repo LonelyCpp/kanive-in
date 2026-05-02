@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Icon from '@iconify/svelte';
 
 	const LOCAL_STORAGE_KEY = 'airline-print-booking';
 	const CURRENCIES = ['INR', 'USD', 'EUR', 'GBP', 'AED', 'SGD'];
@@ -23,12 +24,15 @@
 	interface Flight {
 		flightNumber: string;
 		origin: string;
+		originCode: string;
 		destination: string;
+		destinationCode: string;
 		date: string;
 		departureTime: string;
 		arrivalTime: string;
 		duration: string;
-		terminal: string;
+		originTerminal: string;
+		destinationTerminal: string;
 		class: string;
 		passengerSeats: string[];
 	}
@@ -57,12 +61,15 @@
 		return {
 			flightNumber: '',
 			origin: '',
+			originCode: '',
 			destination: '',
+			destinationCode: '',
 			date: '',
 			departureTime: '',
 			arrivalTime: '',
 			duration: '',
-			terminal: '',
+			originTerminal: '',
+			destinationTerminal: '',
 			class: '',
 			passengerSeats: []
 		};
@@ -139,6 +146,14 @@
 
 	function compressImage(file: File): Promise<string> {
 		return new Promise((resolve, reject) => {
+			if (file.type === 'image/svg+xml') {
+				const reader = new FileReader();
+				reader.onload = () => resolve(reader.result as string);
+				reader.onerror = () => reject(new Error('Failed to read SVG'));
+				reader.readAsDataURL(file);
+				return;
+			}
+
 			const reader = new FileReader();
 			reader.onload = () => {
 				const img = new Image();
@@ -165,7 +180,7 @@
 						return;
 					}
 					ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-					resolve(canvas.toDataURL('image/jpeg', 0.7));
+					resolve(canvas.toDataURL('image/png'));
 				};
 				img.onerror = () => reject(new Error('Failed to load image'));
 				img.src = reader.result as string;
@@ -240,9 +255,14 @@
 		...booking.returnFlights.map((f, i) => ({ ...f, section: 'return' as const, index: i }))
 	]);
 
-	function getSeatLabel(flight: { origin: string; destination: string }, idx: number): string {
-		if (flight.origin && flight.destination) {
-			return `${flight.origin}→${flight.destination}`;
+	function getSeatLabel(
+		flight: { origin: string; originCode: string; destination: string; destinationCode: string },
+		idx: number
+	): string {
+		const origin = flight.originCode || flight.origin;
+		const dest = flight.destinationCode || flight.destination;
+		if (origin && dest) {
+			return `${origin}→${dest}`;
 		}
 		return `Flight ${idx + 1}`;
 	}
@@ -253,6 +273,12 @@
 	<meta
 		name="description"
 		content="Generate beautiful, print-friendly flight reservation tickets"
+	/>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap"
+		rel="stylesheet"
 	/>
 </svelte:head>
 
@@ -416,11 +442,31 @@
 					<div class="input-row">
 						<label>
 							<span class="label-text">Origin</span>
-							<input type="text" bind:value={flight.origin} placeholder="BLR" />
+							<input type="text" bind:value={flight.origin} placeholder="Bengaluru" />
 						</label>
 						<label>
+							<span class="label-text">Code</span>
+							<input type="text" bind:value={flight.originCode} placeholder="BLR" size={5} />
+						</label>
+					</div>
+					<div class="input-row">
+						<label>
 							<span class="label-text">Destination</span>
-							<input type="text" bind:value={flight.destination} placeholder="DEL" />
+							<input type="text" bind:value={flight.destination} placeholder="Delhi" />
+						</label>
+						<label>
+							<span class="label-text">Code</span>
+							<input type="text" bind:value={flight.destinationCode} placeholder="DEL" size={5} />
+						</label>
+					</div>
+					<div class="input-row">
+						<label>
+							<span class="label-text">Term (Origin)</span>
+							<input type="text" bind:value={flight.originTerminal} placeholder="T1" />
+						</label>
+						<label>
+							<span class="label-text">Term (Dest)</span>
+							<input type="text" bind:value={flight.destinationTerminal} placeholder="T3" />
 						</label>
 					</div>
 					<label>
@@ -443,14 +489,10 @@
 							<input type="text" bind:value={flight.duration} placeholder="2h 30m" />
 						</label>
 						<label>
-							<span class="label-text">Terminal</span>
-							<input type="text" bind:value={flight.terminal} placeholder="T1" />
+							<span class="label-text">Class</span>
+							<input type="text" bind:value={flight.class} placeholder="Economy" />
 						</label>
 					</div>
-					<label>
-						<span class="label-text">Class</span>
-						<input type="text" bind:value={flight.class} placeholder="Economy" />
-					</label>
 					{#if booking.passengers.filter((p) => p.name.trim()).length > 0}
 						<div class="seats-row">
 							<span class="label-text">Seats</span>
@@ -495,11 +537,31 @@
 					<div class="input-row">
 						<label>
 							<span class="label-text">Origin</span>
-							<input type="text" bind:value={flight.origin} placeholder="DEL" />
+							<input type="text" bind:value={flight.origin} placeholder="Delhi" />
 						</label>
 						<label>
+							<span class="label-text">Code</span>
+							<input type="text" bind:value={flight.originCode} placeholder="DEL" size={5} />
+						</label>
+					</div>
+					<div class="input-row">
+						<label>
 							<span class="label-text">Destination</span>
-							<input type="text" bind:value={flight.destination} placeholder="BLR" />
+							<input type="text" bind:value={flight.destination} placeholder="Bengaluru" />
+						</label>
+						<label>
+							<span class="label-text">Code</span>
+							<input type="text" bind:value={flight.destinationCode} placeholder="BLR" size={5} />
+						</label>
+					</div>
+					<div class="input-row">
+						<label>
+							<span class="label-text">Term (Origin)</span>
+							<input type="text" bind:value={flight.originTerminal} placeholder="T3" />
+						</label>
+						<label>
+							<span class="label-text">Term (Dest)</span>
+							<input type="text" bind:value={flight.destinationTerminal} placeholder="T1" />
 						</label>
 					</div>
 					<label>
@@ -522,14 +584,10 @@
 							<input type="text" bind:value={flight.duration} placeholder="2h 30m" />
 						</label>
 						<label>
-							<span class="label-text">Terminal</span>
-							<input type="text" bind:value={flight.terminal} placeholder="T2" />
+							<span class="label-text">Class</span>
+							<input type="text" bind:value={flight.class} placeholder="Economy" />
 						</label>
 					</div>
-					<label>
-						<span class="label-text">Class</span>
-						<input type="text" bind:value={flight.class} placeholder="Economy" />
-					</label>
 					{#if booking.passengers.filter((p) => p.name.trim()).length > 0}
 						<div class="seats-row">
 							<span class="label-text">Seats</span>
@@ -580,240 +638,262 @@
 
 	<div class="preview-panel">
 		<div class="ticket">
-			{#if isNonEmpty(booking.airline.name) || booking.airline.logo}
-				<div class="ticket-header">
-					{#if booking.airline.logo}
-						<img
-							class="ticket-airline-logo"
-							src={booking.airline.logo}
-							alt={booking.airline.name || 'Airline'}
-						/>
-					{/if}
-					{#if isNonEmpty(booking.airline.name)}
-						<h1 class="ticket-airline-name">{booking.airline.name}</h1>
-					{/if}
-				</div>
-			{/if}
+			<h1 class="ticket-masthead">E-Ticket Itinerary</h1>
 
-			{#if isNonEmpty(booking.bookingId) || isNonEmpty(booking.pnr)}
-				<div class="ticket-refs">
-					{#if isNonEmpty(booking.bookingId)}
-						<span>Booking ID: <strong>{booking.bookingId}</strong></span>
-					{/if}
-					{#if isNonEmpty(booking.pnr)}
-						<span>PNR: <strong>{booking.pnr}</strong></span>
-					{/if}
-				</div>
-			{/if}
+			<div class="ticket-perf"></div>
 
-			{#if booking.outboundFlights.some((f) => f.flightNumber.trim() && f.origin.trim() && f.destination.trim())}
-				<div class="ticket-section">
-					<h2 class="ticket-section-title">Outbound</h2>
-					{#each booking.outboundFlights as flight, i}
-						{@const hasFlight =
-							flight.flightNumber.trim() || flight.origin.trim() || flight.destination.trim()}
-						{#if hasFlight}
-							<div class="ticket-flight">
-								<div class="ticket-flight-main">
-									<div class="ticket-flight-route">
-										{#if isNonEmpty(flight.flightNumber)}
-											<span class="ticket-flight-number">{flight.flightNumber}</span>
-										{/if}
-										<span class="ticket-flight-cities">
-											{#if isNonEmpty(flight.origin)}
-												<span>{flight.origin}</span>
-											{/if}
-											{#if isNonEmpty(flight.origin) && isNonEmpty(flight.destination)}
-												<span class="arrow">&rarr;</span>
-											{/if}
-											{#if isNonEmpty(flight.destination)}
-												<span>{flight.destination}</span>
-											{/if}
-										</span>
-									</div>
-									<div class="ticket-flight-meta">
-										{#if isNonEmpty(flight.date)}
-											<span class="ticket-flight-date">{formatDate(flight.date)}</span>
-										{/if}
-										{#if isNonEmpty(flight.departureTime) || isNonEmpty(flight.arrivalTime)}
-											<span class="ticket-flight-times">
-												{#if isNonEmpty(flight.departureTime)}
-													{formatTime(flight.departureTime)}
-												{/if}
-												{#if isNonEmpty(flight.departureTime) && isNonEmpty(flight.arrivalTime)}
-													<span class="time-sep">&mdash;</span>
-												{/if}
-												{#if isNonEmpty(flight.arrivalTime)}
-													{formatTime(flight.arrivalTime)}
-												{/if}
-											</span>
-										{/if}
-										{#if isNonEmpty(flight.duration)}
-											<span class="ticket-flight-duration">{flight.duration}</span>
-										{/if}
-									</div>
-									<div class="ticket-flight-extra">
-										{#if isNonEmpty(flight.terminal)}
-											<span>Terminal {flight.terminal}</span>
-										{/if}
-										{#if isNonEmpty(flight.class)}
-											<span class="ticket-flight-class">{flight.class}</span>
-										{/if}
-									</div>
-								</div>
-							</div>
-							{#if i < booking.outboundFlights.length - 1}
-								<div class="flight-connector"></div>
-							{/if}
+			{#if isNonEmpty(booking.airline.name) || booking.airline.logo || isNonEmpty(booking.bookingId) || isNonEmpty(booking.pnr)}
+				<div class="ticket-top">
+					<div class="ticket-top-left">
+						{#if booking.airline.logo}
+							<img
+								class="ticket-airline-logo"
+								src={booking.airline.logo}
+								alt={booking.airline.name || 'Airline'}
+							/>
 						{/if}
-					{/each}
-				</div>
-			{/if}
-
-			{#if booking.returnFlights.some((f) => f.flightNumber.trim() && f.origin.trim() && f.destination.trim())}
-				<div class="ticket-section">
-					<h2 class="ticket-section-title">Return</h2>
-					{#each booking.returnFlights as flight, i}
-						{@const hasFlight =
-							flight.flightNumber.trim() || flight.origin.trim() || flight.destination.trim()}
-						{#if hasFlight}
-							<div class="ticket-flight">
-								<div class="ticket-flight-main">
-									<div class="ticket-flight-route">
-										{#if isNonEmpty(flight.flightNumber)}
-											<span class="ticket-flight-number">{flight.flightNumber}</span>
-										{/if}
-										<span class="ticket-flight-cities">
-											{#if isNonEmpty(flight.origin)}
-												<span>{flight.origin}</span>
-											{/if}
-											{#if isNonEmpty(flight.origin) && isNonEmpty(flight.destination)}
-												<span class="arrow">&rarr;</span>
-											{/if}
-											{#if isNonEmpty(flight.destination)}
-												<span>{flight.destination}</span>
-											{/if}
-										</span>
-									</div>
-									<div class="ticket-flight-meta">
-										{#if isNonEmpty(flight.date)}
-											<span class="ticket-flight-date">{formatDate(flight.date)}</span>
-										{/if}
-										{#if isNonEmpty(flight.departureTime) || isNonEmpty(flight.arrivalTime)}
-											<span class="ticket-flight-times">
-												{#if isNonEmpty(flight.departureTime)}
-													{formatTime(flight.departureTime)}
-												{/if}
-												{#if isNonEmpty(flight.departureTime) && isNonEmpty(flight.arrivalTime)}
-													<span class="time-sep">&mdash;</span>
-												{/if}
-												{#if isNonEmpty(flight.arrivalTime)}
-													{formatTime(flight.arrivalTime)}
-												{/if}
-											</span>
-										{/if}
-										{#if isNonEmpty(flight.duration)}
-											<span class="ticket-flight-duration">{flight.duration}</span>
-										{/if}
-									</div>
-									<div class="ticket-flight-extra">
-										{#if isNonEmpty(flight.terminal)}
-											<span>Terminal {flight.terminal}</span>
-										{/if}
-										{#if isNonEmpty(flight.class)}
-											<span class="ticket-flight-class">{flight.class}</span>
-										{/if}
-									</div>
-								</div>
-							</div>
-							{#if i < booking.returnFlights.length - 1}
-								<div class="flight-connector"></div>
-							{/if}
+						{#if isNonEmpty(booking.airline.name)}
+							<h2 class="ticket-airline-name">{booking.airline.name}</h2>
 						{/if}
-					{/each}
-				</div>
-			{/if}
-
-			{#if booking.passengers.some((p) => isNonEmpty(p.name))}
-				<div class="ticket-section">
-					<h2 class="ticket-section-title">Passengers</h2>
-					{#each booking.passengers as passenger, pi}
-						{#if isNonEmpty(passenger.name)}
-							<div class="ticket-passenger">
-								<div class="ticket-passenger-name">
-									<span>{passenger.name}</span>
-									<span class="ticket-passenger-type">({passenger.type})</span>
-								</div>
-								{#if isNonEmpty(passenger.eTicketNumber)}
-									<div class="ticket-eticket">
-										e-Ticket: {passenger.eTicketNumber}
-									</div>
-								{/if}
-								{#if allFlights.some((f) => isNonEmpty(f.passengerSeats[pi]))}
-									<div class="ticket-seats">
-										<span class="ticket-seats-label">Seats:</span>
-										{#each allFlights as flight}
-											{#if isNonEmpty(flight.passengerSeats[pi])}
-												<span class="ticket-seat-item">
-													{flight.passengerSeats[pi]}
-													<span class="ticket-seat-route">
-														({getSeatLabel(flight, flight.index)})</span
-													>
-												</span>
-											{/if}
-										{/each}
-									</div>
-								{/if}
+						{#if isNonEmpty(booking.airline.phone) || isNonEmpty(booking.airline.email) || isNonEmpty(booking.airline.website)}
+							<div class="ticket-airline-contact">
+								{#if isNonEmpty(booking.airline.phone)}<span>{booking.airline.phone}</span>{/if}
+								{#if isNonEmpty(booking.airline.email)}<span>{booking.airline.email}</span>{/if}
+								{#if isNonEmpty(booking.airline.website)}<span>{booking.airline.website}</span>{/if}
 							</div>
 						{/if}
-					{/each}
-				</div>
-			{/if}
-
-			{#if isNonEmpty(booking.aggregator.name)}
-				<div class="ticket-section">
-					<h2 class="ticket-section-title">Booking Info</h2>
-					<div class="ticket-aggregator">
-						<div class="ticket-aggregator-header">
-							{#if booking.aggregator.logo}
-								<img
-									class="ticket-aggregator-logo"
-									src={booking.aggregator.logo}
-									alt={booking.aggregator.name}
-								/>
-							{/if}
-							<span class="ticket-aggregator-name">Booked via {booking.aggregator.name}</span>
-						</div>
-						<div class="ticket-aggregator-contacts">
-							{#if isNonEmpty(booking.aggregator.phone)}
-								<span>{booking.aggregator.phone}</span>
-							{/if}
-							{#if isNonEmpty(booking.aggregator.email)}
-								<span>{booking.aggregator.email}</span>
-							{/if}
-							{#if isNonEmpty(booking.aggregator.website)}
-								<span>{booking.aggregator.website}</span>
-							{/if}
-						</div>
-						{#if isNonEmpty(booking.aggregator.address)}
-							<div class="ticket-aggregator-address">
-								{booking.aggregator.address}
+						{#if isNonEmpty(booking.airline.address)}
+							<div class="ticket-airline-address">{booking.airline.address}</div>
+						{/if}
+					</div>
+					<div class="ticket-top-right">
+						<!-- <span class="ticket-icon"><Icon icon="mdi:ticket-confirmation-outline" /></span> -->
+						{#if isNonEmpty(booking.pnr)}
+							<div class="ticket-ref-item">
+								<span class="label">PNR</span>
+								<span class="value-mono">{booking.pnr}</span>
+							</div>
+						{/if}
+						{#if isNonEmpty(booking.bookingId)}
+							<div class="ticket-ref-item">
+								<span class="label">Booking ID</span>
+								<span class="value-mono">{booking.bookingId}</span>
 							</div>
 						{/if}
 					</div>
 				</div>
+				<div class="ticket-perf"></div>
+			{/if}
+
+			{#if booking.outboundFlights.some((f) => f.flightNumber.trim() || f.origin.trim() || f.destination.trim())}
+				<h2 class="ticket-section-title">Outbound</h2>
+				{#each booking.outboundFlights as flight, i}
+					{@const hasFlight =
+						flight.flightNumber.trim() || flight.origin.trim() || flight.destination.trim()}
+					{#if hasFlight}
+						<div class="ticket-segment">
+							<div class="segment-grid">
+								<div class="seg-col">
+									<span class="label">From</span>
+									{#if isNonEmpty(flight.origin)}
+										<span class="value-lg">{flight.origin}</span>
+									{/if}
+									{#if isNonEmpty(flight.originCode) || isNonEmpty(flight.originTerminal)}
+										<span class="value-mono"
+											>{#if isNonEmpty(flight.originCode)}{flight.originCode}{/if}{#if isNonEmpty(flight.originCode) && isNonEmpty(flight.originTerminal)}
+												&nbsp;|&nbsp;{/if}{#if isNonEmpty(flight.originTerminal)}{flight.originTerminal}{/if}</span
+										>
+									{/if}
+									{#if isNonEmpty(flight.departureTime)}
+										<span class="segment-time-value">{formatTime(flight.departureTime)}</span>
+									{/if}
+									{#if isNonEmpty(flight.date)}
+										<span class="segment-time-date">{formatDate(flight.date)}</span>
+									{/if}
+								</div>
+
+								<div class="seg-col seg-col--center">
+									<div class="segment-plane-line">
+										<span class="plane-icon"><Icon icon="mdi:airplane" /></span>
+									</div>
+									{#if isNonEmpty(flight.duration)}
+										<span class="segment-duration">{flight.duration}</span>
+									{/if}
+									{#if isNonEmpty(flight.flightNumber)}
+										<span class="value-mono segment-flight-num">{flight.flightNumber}</span>
+									{/if}
+									{#if isNonEmpty(flight.class)}
+										<span class="segment-class">{flight.class}</span>
+									{/if}
+								</div>
+
+								<div class="seg-col seg-col--right">
+									<span class="label">To</span>
+									{#if isNonEmpty(flight.destination)}
+										<span class="value-lg">{flight.destination}</span>
+									{/if}
+									{#if isNonEmpty(flight.destinationCode) || isNonEmpty(flight.destinationTerminal)}
+										<span class="value-mono"
+											>{#if isNonEmpty(flight.destinationCode)}{flight.destinationCode}{/if}{#if isNonEmpty(flight.destinationCode) && isNonEmpty(flight.destinationTerminal)}
+												&nbsp;|&nbsp;{/if}{#if isNonEmpty(flight.destinationTerminal)}{flight.destinationTerminal}{/if}</span
+										>
+									{/if}
+									{#if isNonEmpty(flight.arrivalTime)}
+										<span class="segment-time-value">{formatTime(flight.arrivalTime)}</span>
+									{/if}
+									{#if isNonEmpty(flight.date)}
+										<span class="segment-time-date">{formatDate(flight.date)}</span>
+									{/if}
+								</div>
+							</div>
+						</div>
+						{#if i < booking.outboundFlights.length - 1}
+							<div class="ticket-perf"></div>
+						{/if}
+					{/if}
+				{/each}
+				<div class="ticket-perf"></div>
+			{/if}
+
+			{#if booking.returnFlights.some((f) => f.flightNumber.trim() || f.origin.trim() || f.destination.trim())}
+				<h2 class="ticket-section-title">Return</h2>
+				{#each booking.returnFlights as flight, i}
+					{@const hasFlight =
+						flight.flightNumber.trim() || flight.origin.trim() || flight.destination.trim()}
+					{#if hasFlight}
+						<div class="ticket-segment">
+							<div class="segment-grid">
+								<div class="seg-col">
+									<span class="label">From</span>
+									{#if isNonEmpty(flight.origin)}
+										<span class="value-lg">{flight.origin}</span>
+									{/if}
+									{#if isNonEmpty(flight.originCode) || isNonEmpty(flight.originTerminal)}
+										<span class="value-mono"
+											>{#if isNonEmpty(flight.originCode)}{flight.originCode}{/if}{#if isNonEmpty(flight.originCode) && isNonEmpty(flight.originTerminal)}
+												&nbsp;|&nbsp;{/if}{#if isNonEmpty(flight.originTerminal)}{flight.originTerminal}{/if}</span
+										>
+									{/if}
+									{#if isNonEmpty(flight.departureTime)}
+										<span class="segment-time-value">{formatTime(flight.departureTime)}</span>
+									{/if}
+									{#if isNonEmpty(flight.date)}
+										<span class="segment-time-date">{formatDate(flight.date)}</span>
+									{/if}
+								</div>
+
+								<div class="seg-col seg-col--center">
+									<div class="segment-plane-line">
+										<span class="plane-icon"><Icon icon="mdi:airplane" /></span>
+									</div>
+									{#if isNonEmpty(flight.duration)}
+										<span class="segment-duration">{flight.duration}</span>
+									{/if}
+									{#if isNonEmpty(flight.flightNumber)}
+										<span class="value-mono segment-flight-num">{flight.flightNumber}</span>
+									{/if}
+									{#if isNonEmpty(flight.class)}
+										<span class="segment-class">{flight.class}</span>
+									{/if}
+								</div>
+
+								<div class="seg-col seg-col--right">
+									<span class="label">To</span>
+									{#if isNonEmpty(flight.destination)}
+										<span class="value-lg">{flight.destination}</span>
+									{/if}
+									{#if isNonEmpty(flight.destinationCode) || isNonEmpty(flight.destinationTerminal)}
+										<span class="value-mono"
+											>{#if isNonEmpty(flight.destinationCode)}{flight.destinationCode}{/if}{#if isNonEmpty(flight.destinationCode) && isNonEmpty(flight.destinationTerminal)}
+												&nbsp;|&nbsp;{/if}{#if isNonEmpty(flight.destinationTerminal)}{flight.destinationTerminal}{/if}</span
+										>
+									{/if}
+									{#if isNonEmpty(flight.arrivalTime)}
+										<span class="segment-time-value">{formatTime(flight.arrivalTime)}</span>
+									{/if}
+									{#if isNonEmpty(flight.date)}
+										<span class="segment-time-date">{formatDate(flight.date)}</span>
+									{/if}
+								</div>
+							</div>
+						</div>
+						{#if i < booking.returnFlights.length - 1}
+							<div class="ticket-perf"></div>
+						{/if}
+					{/if}
+				{/each}
+				<div class="ticket-perf"></div>
+			{/if}
+
+			{#if booking.passengers.some((p) => isNonEmpty(p.name))}
+				<h2 class="ticket-section-title">Passengers</h2>
+				{#each booking.passengers as passenger, pi}
+					{#if isNonEmpty(passenger.name)}
+						<div class="ticket-passenger">
+							<div class="passenger-main">
+								<span class="passenger-name">
+									<span class="value">{passenger.name}</span>
+									<span class="passenger-type">({passenger.type})</span>
+								</span>
+								{#if isNonEmpty(passenger.eTicketNumber)}
+									<span class="passenger-eticket">
+										<span class="label">e-Ticket</span>
+										<span class="value-mono">{passenger.eTicketNumber}</span>
+									</span>
+								{/if}
+							</div>
+							{#if allFlights.some((f) => isNonEmpty(f.passengerSeats[pi]))}
+								<div class="passenger-seats">
+									<span class="ticket-icon ticket-icon--sm"><Icon icon="mdi:seat-passenger" /></span
+									>
+									{#each allFlights as flight}
+										{#if isNonEmpty(flight.passengerSeats[pi])}
+											<span class="seat-badge">
+												<span class="value-mono">{flight.passengerSeats[pi]}</span>
+												<span class="seat-route">({getSeatLabel(flight, flight.index)})</span>
+											</span>
+										{/if}
+									{/each}
+								</div>
+							{/if}
+						</div>
+						{#if pi < booking.passengers.length - 1 && isNonEmpty(booking.passengers[pi + 1]?.name || '')}
+							<div class="ticket-perf"></div>
+						{/if}
+					{/if}
+				{/each}
+				<div class="ticket-perf"></div>
 			{/if}
 
 			{#if isNonEmpty(booking.costAmount)}
 				<div class="ticket-total">
-					<span class="ticket-total-label">Total</span>
-					<span class="ticket-total-value"
+					<span class="ticket-total-label">Total Fare</span>
+					<span class="ticket-total-value value-lg"
 						>{booking.currency === 'INR' ? '₹' : booking.currency + ' '}{booking.costAmount}</span
 					>
 				</div>
+				<div class="ticket-perf"></div>
 			{/if}
 
-			<div class="ticket-footer">Generated by Airline Print</div>
+			{#if isNonEmpty(booking.aggregator.name)}
+				<div class="ticket-issuer">
+					<span class="label">Issued by</span>
+					{#if booking.aggregator.logo}
+						<img class="ticket-issuer-logo" src={booking.aggregator.logo} alt={booking.aggregator.name} />
+					{/if}
+					<span class="value">{booking.aggregator.name}</span>
+					{#if isNonEmpty(booking.aggregator.phone) || isNonEmpty(booking.aggregator.email) || isNonEmpty(booking.aggregator.website)}
+						<span class="ticket-issuer-contact">
+							{#if isNonEmpty(booking.aggregator.phone)}<span>{booking.aggregator.phone}</span>{/if}
+							{#if isNonEmpty(booking.aggregator.email)}<span>{booking.aggregator.email}</span>{/if}
+							{#if isNonEmpty(booking.aggregator.website)}<span>{booking.aggregator.website}</span>{/if}
+						</span>
+					{/if}
+					<span class="ticket-footer-text">Generated by Airline Print</span>
+				</div>
+			{:else}
+				<div class="ticket-footer">Generated by Airline Print</div>
+			{/if}
 		</div>
 	</div>
 </div>
@@ -1044,216 +1124,350 @@
 	}
 
 	.ticket {
-		background: #fff;
-		border: 1px solid #e0e0e0;
-		border-radius: 4px;
-		padding: 40px 44px;
-		box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-		max-width: 680px;
-		font-size: 0.92em;
-		line-height: 1.6;
-		color: #1a1d23;
+		--paper: hsl(36 30% 96%);
+		--ink: hsl(220 45% 12%);
+		--ink-soft: hsl(220 20% 38%);
+		--ink-muted: hsl(220 15% 60%);
+		--accent: hsl(30 55% 45%);
+		--paper-edge: hsl(36 15% 85%);
+
+		background: var(--paper);
+		background-image: radial-gradient(circle, var(--paper-edge) 0.5px, transparent 0.5px);
+		background-size: 18px 18px;
+		border: 1px solid var(--paper-edge);
+		border-radius: 2px;
+		padding: 48px 52px;
+		box-shadow:
+			0 1px 3px rgba(0, 0, 0, 0.04),
+			0 4px 16px rgba(0, 0, 0, 0.06);
+		max-width: 860px;
+		font-family: 'Inter', sans-serif;
+		font-size: 13px;
+		line-height: 1.55;
+		color: var(--ink);
 	}
 
-	/* ── Ticket Header ── */
+	/* ── Font assignments ── */
 
-	.ticket-header {
+	.ticket h1,
+	.ticket h2,
+	.value-lg {
+		font-family: 'Playfair Display', Georgia, serif;
+	}
+
+	.value-mono {
+		font-family: 'JetBrains Mono', 'Courier New', monospace;
+	}
+
+	/* ── Label / Value system ── */
+
+	.label {
+		display: block;
+		font-size: 10px;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: var(--ink-muted);
+		margin-bottom: 1px;
+	}
+
+	.value {
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--ink);
+	}
+
+	.value-lg {
+		font-size: 24px;
+		font-weight: 700;
+		color: var(--ink);
+		letter-spacing: -0.01em;
+		line-height: 1.1;
+	}
+
+	.value-mono {
+		font-size: 13px;
+		font-weight: 500;
+		color: var(--ink-soft);
+	}
+
+	/* ── Masthead ── */
+
+	.ticket-masthead {
+		margin: 0 0 8px 0;
+		font-size: 28px;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+		color: var(--ink);
+		text-align: center;
+	}
+
+	/* ── Perforation dotted line ── */
+
+	.ticket-perf {
+		height: 0;
+		border: none;
+		border-top: 2px dotted var(--paper-edge);
+		margin: 16px 0;
+	}
+
+	/* ── Icons ── */
+
+	.ticket-icon {
+		font-size: 16px;
+		color: var(--ink-muted);
+		flex-shrink: 0;
+	}
+
+	.ticket-icon--sm {
+		font-size: 13px;
+	}
+
+	/* ── Top section: airline + refs ── */
+
+	.ticket-top {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 24px;
+		align-items: start;
+	}
+
+	.ticket-top-left {
 		display: flex;
-		align-items: center;
-		gap: 16px;
-		margin-bottom: 20px;
-		padding-bottom: 16px;
-		border-bottom: 1px solid #e0e0e0;
+		flex-direction: column;
+	}
+
+	.ticket-top-right {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		text-align: right;
+		gap: 6px;
+	}
+
+	.ticket-ref-item {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
 	}
 
 	.ticket-airline-logo {
-		height: 48px;
-		max-width: 120px;
+		height: 40px;
+		max-width: 100px;
 		object-fit: contain;
+		margin-bottom: 4px;
 	}
 
 	.ticket-airline-name {
 		margin: 0;
-		font-size: 1.5em;
+		font-size: 20px;
 		font-weight: 700;
 		letter-spacing: 0.02em;
 	}
 
-	/* ── Ticket Refs ── */
-
-	.ticket-refs {
+	.ticket-airline-contact {
 		display: flex;
-		gap: 32px;
-		margin-bottom: 20px;
-		padding-bottom: 14px;
-		border-bottom: 1px solid #e0e0e0;
-		font-size: 0.88em;
-		color: var(--on-surface-light-color);
+		flex-wrap: wrap;
+		gap: 4px 12px;
+		margin-top: 4px;
+		font-size: 12px;
+		color: var(--ink-soft);
 	}
 
-	.ticket-refs strong {
-		color: var(--on-surface-color);
+	.ticket-airline-address {
+		font-size: 11px;
+		color: var(--ink-muted);
+		margin-top: 2px;
 	}
 
-	/* ── Ticket Sections ── */
-
-	.ticket-section {
-		margin-bottom: 20px;
-		padding-bottom: 16px;
-		border-bottom: 1px solid #e0e0e0;
-	}
-
-	.ticket-section:last-of-type {
-		border-bottom: none;
-	}
+	/* ── Section titles ── */
 
 	.ticket-section-title {
 		margin: 0 0 12px 0;
-		font-size: 0.8em;
+		font-size: 13px;
+		font-weight: 700;
 		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		color: var(--on-surface-light-color);
-		font-weight: 600;
+		letter-spacing: 0.18em;
+		color: var(--ink-muted);
 	}
 
-	/* ── Flight Block ── */
+	/* ── Flight Segment ── */
 
-	.ticket-flight {
-		margin-bottom: 12px;
-	}
-
-	.ticket-flight-main {
-		padding: 0;
-	}
-
-	.ticket-flight-route {
-		display: flex;
-		align-items: baseline;
-		gap: 12px;
+	.ticket-segment {
 		margin-bottom: 4px;
 	}
 
-	.ticket-flight-number {
-		font-weight: 700;
-		font-size: 1.05em;
+	.segment-grid {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		gap: 20px;
+		align-items: start;
 	}
 
-	.ticket-flight-cities {
-		font-size: 1em;
-		color: var(--on-surface-color);
-	}
-
-	.arrow {
-		margin: 0 6px;
-		color: var(--on-surface-light-color);
-	}
-
-	.ticket-flight-meta {
+	.seg-col {
 		display: flex;
-		gap: 16px;
-		font-size: 0.88em;
-		color: var(--on-surface-light-color);
+		flex-direction: column;
+	}
+
+	.seg-col--center {
+		align-items: center;
+		text-align: center;
+	}
+
+	.seg-col--right {
+		align-items: flex-end;
+		text-align: right;
+	}
+
+	/* ── Center column: plane + dashes ── */
+
+	.segment-plane-line {
+		display: flex;
+		align-items: center;
+		gap: 0;
+		margin-bottom: 8px;
+	}
+
+	.segment-plane-line::before,
+	.segment-plane-line::after {
+		content: '';
+		width: 40px;
+		border-top: 2px dashed var(--paper-edge);
+	}
+
+	.plane-icon {
+		font-size: 15px;
+		color: var(--accent);
+		padding: 0 10px;
+		flex-shrink: 0;
+	}
+
+	.segment-duration {
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--ink);
+		margin-bottom: 4px;
+	}
+
+	.segment-flight-num {
 		margin-bottom: 2px;
 	}
 
-	.ticket-flight-extra {
-		display: flex;
-		gap: 16px;
-		font-size: 0.82em;
-		color: var(--on-surface-light-color);
-	}
-
-	.ticket-flight-class {
+	.segment-class {
+		font-size: 12px;
+		color: var(--ink-muted);
 		font-style: italic;
 	}
 
-	.flight-connector {
-		height: 8px;
-		border-left: 2px dotted #ccc;
-		margin-left: 8px;
+	/* ── Time values within columns ── */
+
+	.segment-time-value {
+		font-size: 20px;
+		font-weight: 700;
+		color: var(--ink);
+		line-height: 1.2;
+		margin-top: 8px;
+	}
+
+	.segment-time-date {
+		font-size: 12px;
+		color: var(--ink-soft);
+		margin-top: 2px;
 	}
 
 	/* ── Passenger Block ── */
 
 	.ticket-passenger {
-		margin-bottom: 12px;
-	}
-
-	.ticket-passenger-name {
-		font-weight: 600;
-	}
-
-	.ticket-passenger-type {
-		font-weight: 400;
-		font-size: 0.85em;
-		color: var(--on-surface-light-color);
-		margin-left: 4px;
-	}
-
-	.ticket-eticket {
-		font-size: 0.82em;
-		color: var(--on-surface-light-color);
-		margin-top: 1px;
-	}
-
-	.ticket-seats {
-		font-size: 0.82em;
-		color: var(--on-surface-light-color);
-		margin-top: 2px;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 4px 12px;
-	}
-
-	.ticket-seats-label {
-		font-weight: 500;
-	}
-
-	.ticket-seat-item {
-		white-space: nowrap;
-	}
-
-	.ticket-seat-route {
-		font-size: 0.9em;
-		color: #999;
-	}
-
-	/* ── Aggregator ── */
-
-	.ticket-aggregator {
-		font-size: 0.85em;
-		color: var(--on-surface-light-color);
-	}
-
-	.ticket-aggregator-header {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin-bottom: 6px;
-	}
-
-	.ticket-aggregator-logo {
-		height: 28px;
-		max-width: 80px;
-		object-fit: contain;
-	}
-
-	.ticket-aggregator-name {
-		font-weight: 500;
-		color: var(--on-surface-color);
-	}
-
-	.ticket-aggregator-contacts {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 4px 16px;
 		margin-bottom: 4px;
 	}
 
-	.ticket-aggregator-address {
-		font-size: 0.9em;
-		color: #999;
-		margin-top: 2px;
+	.passenger-main {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 8px 20px;
+		margin-bottom: 4px;
+	}
+
+	.passenger-eticket {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+	}
+
+	.passenger-name {
+		display: flex;
+		align-items: baseline;
+		gap: 4px;
+	}
+
+	.passenger-type {
+		font-size: 12px;
+		color: var(--ink-muted);
+	}
+
+	.passenger-seats {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 4px 12px;
+		font-size: 12px;
+		color: var(--ink-soft);
+	}
+
+	.seat-badge {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 4px;
+	}
+
+	.seat-route {
+		font-size: 11px;
+		color: var(--ink-muted);
+	}
+
+	/* ── Issuer footer ── */
+
+	.ticket-issuer {
+		display: flex;
+		align-items: baseline;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 4px 10px;
+		padding-top: 10px;
+		font-size: 11px;
+		color: var(--ink-muted);
+	}
+
+	.ticket-issuer-logo {
+		height: 14px;
+		max-width: 50px;
+		object-fit: contain;
+		vertical-align: middle;
+	}
+
+	.ticket-issuer-contact {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 10px;
+		font-size: 11px;
+		color: var(--ink-muted);
+	}
+
+	.ticket-footer-text {
+		font-size: 10px;
+		color: var(--ink-muted);
+		letter-spacing: 0.04em;
+		margin-left: 4px;
+	}
+
+	.ticket-footer {
+		text-align: center;
+		font-size: 10px;
+		color: var(--ink-muted);
+		padding-top: 10px;
+		letter-spacing: 0.04em;
 	}
 
 	/* ── Total ── */
@@ -1262,33 +1476,30 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: baseline;
-		padding-top: 16px;
-		border-top: 2px solid #ddd;
-		margin-top: 8px;
+		padding-top: 12px;
 	}
 
 	.ticket-total-label {
-		font-size: 0.88em;
+		font-size: 13px;
+		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--on-surface-light-color);
+		letter-spacing: 0.18em;
+		color: var(--ink-muted);
 	}
 
 	.ticket-total-value {
-		font-size: 1.3em;
-		font-weight: 700;
+		font-size: 26px;
 	}
 
 	/* ── Footer ── */
 
 	.ticket-footer {
 		text-align: center;
-		font-size: 0.7em;
-		color: #ccc;
-		margin-top: 24px;
-		padding-top: 12px;
-		border-top: 1px solid #eee;
-		letter-spacing: 0.04em;
+		font-size: 10px;
+		color: var(--ink-muted);
+		margin-top: 20px;
+		padding-top: 10px;
+		letter-spacing: 0.06em;
 	}
 
 	/* ── Responsive ── */
@@ -1311,7 +1522,15 @@
 
 		.ticket {
 			max-width: 100%;
-			padding: 28px 24px;
+			padding: 28px 22px;
+		}
+
+		.segment-grid {
+			gap: 12px;
+		}
+
+		.value-lg {
+			font-size: 20px;
 		}
 	}
 
@@ -1330,6 +1549,7 @@
 		.app-layout {
 			display: block !important;
 			padding: 0 !important;
+			max-width: none !important;
 		}
 
 		.preview-panel {
@@ -1338,18 +1558,32 @@
 		}
 
 		.ticket {
+			background: #fff !important;
+			background-image: none !important;
 			box-shadow: none !important;
-			border: none !important;
+			border: 1px solid #000 !important;
 			border-radius: 0 !important;
-			padding: 0 !important;
+			padding: 32px !important;
 			max-width: 100% !important;
 			font-size: 10pt;
 			line-height: 1.5;
-			color: #000;
+			color: #000 !important;
 		}
 
-		.ticket-section {
-			border-bottom-color: #999 !important;
+		.ticket-perf {
+			border-top-color: #999 !important;
+		}
+
+		.label {
+			color: #444 !important;
+		}
+
+		.value-lg {
+			color: #000 !important;
+		}
+
+		.plane-icon {
+			color: #000 !important;
 		}
 
 		.ticket-footer {
@@ -1358,7 +1592,7 @@
 
 		@page {
 			size: A4;
-			margin: 12mm;
+			margin: 10mm;
 		}
 	}
 </style>
