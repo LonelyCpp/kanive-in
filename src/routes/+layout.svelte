@@ -36,7 +36,6 @@
 	.body {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
 		background-color: var(--background-color);
 	}
 </style>

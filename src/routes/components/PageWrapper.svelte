@@ -13,6 +13,6 @@
 		height: 100%;
 		flex-direction: column;
 		max-width: 720px;
-		margin-bottom: 32px;
+		margin: 0 auto 32px auto;
 	}
 </style>
