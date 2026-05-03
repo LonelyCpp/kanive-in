@@ -27,7 +27,9 @@
   },
   "guests": {
     "roomCount": 1,
-    "names": [""]
+    "names": [
+      { "name": "", "bookedUnder": false }
+    ]
   },
   "price": {
     "currency": "INR",
@@ -46,7 +48,8 @@ Rules:
 - checkInDate, checkOutDate must be in YYYY-MM-DD format
 - checkInTime, checkOutTime must be in 24-hour HH:MM format
 - roomCount must be a number (default 1)
-- names is an array of guest name strings
+- names is an array of objects with "name" (string) and "bookedUnder" (boolean)
+- Exactly one guest should have bookedUnder set to true (the primary guest who made the reservation). If unknown, set the first guest to true.
 - Do not hallucinate data. If a field is not present in the source, use an empty string.`;
 
 	interface Hotel {
@@ -69,9 +72,14 @@ Rules:
 		checkOutTime: string;
 	}
 
+	interface Guest {
+		name: string;
+		bookedUnder: boolean;
+	}
+
 	interface Guests {
 		roomCount: number;
-		names: string[];
+		names: Guest[];
 	}
 
 	interface Price {
@@ -100,7 +108,7 @@ Rules:
 			hotel: { name: '', address: '', phone: '', gps: '', logo: '' },
 			confirmation: { number: '', pin: '' },
 			stay: { checkInDate: '', checkInTime: '', checkOutDate: '', checkOutTime: '' },
-			guests: { roomCount: 1, names: [''] },
+			guests: { roomCount: 1, names: [{ name: '', bookedUnder: true }] },
 			price: { currency: 'INR', total: '' },
 			aggregator: { name: '', phone: '', website: '', logo: '' }
 		};
@@ -115,15 +123,25 @@ Rules:
 	let promptCopied = $state(false);
 
 	function addGuest() {
-		booking.guests.names.push('');
+		booking.guests.names.push({ name: '', bookedUnder: false });
 		scheduleSave();
 	}
 
 	function removeGuest(index: number) {
+		const wasBookedUnder = booking.guests.names[index]?.bookedUnder;
 		booking.guests.names.splice(index, 1);
 		if (booking.guests.names.length === 0) {
-			booking.guests.names.push('');
+			booking.guests.names.push({ name: '', bookedUnder: true });
+		} else if (wasBookedUnder) {
+			booking.guests.names[0].bookedUnder = true;
 		}
+		scheduleSave();
+	}
+
+	function setBookedUnder(index: number) {
+		booking.guests.names.forEach((g, i) => {
+			g.bookedUnder = i === index;
+		});
 		scheduleSave();
 	}
 
@@ -199,6 +217,16 @@ Rules:
 			const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
 			if (saved) {
 				const parsed = JSON.parse(saved);
+				// Migrate old string-array names to Guest objects
+				if (parsed?.guests?.names && Array.isArray(parsed.guests.names)) {
+					const first = parsed.guests.names[0];
+					if (typeof first === 'string') {
+						parsed.guests.names = parsed.guests.names.map((n: string, i: number) => ({
+							name: n,
+							bookedUnder: i === 0
+						}));
+					}
+				}
 				return parsed as Booking;
 			}
 		} catch {
@@ -294,7 +322,7 @@ Rules:
 	}
 
 	const nights = $derived(computeNights());
-	const guestCount = $derived(booking.guests.names.filter((n) => isNonEmpty(n)).length);
+	const guestCount = $derived(booking.guests.names.filter((g) => isNonEmpty(g.name)).length);
 </script>
 
 <svelte:head>
@@ -408,7 +436,7 @@ Rules:
 				<span class="label-text">Number of Rooms</span>
 				<input type="number" min="1" bind:value={booking.guests.roomCount} />
 			</label>
-			{#each booking.guests.names as name, i}
+			{#each booking.guests.names as guest, i}
 				<div class="item-block">
 					<div class="item-block-header">
 						<span>Guest {i + 1}</span>
@@ -418,7 +446,11 @@ Rules:
 					</div>
 					<label>
 						<span class="label-text">Name</span>
-						<input type="text" bind:value={booking.guests.names[i]} placeholder="Full name" />
+						<input type="text" bind:value={guest.name} placeholder="Full name" />
+					</label>
+					<label class="booked-under-label">
+						<input type="checkbox" checked={guest.bookedUnder} onchange={() => setBookedUnder(i)} />
+						<span class="label-text">Booked under this name</span>
 					</label>
 				</div>
 			{/each}
@@ -536,49 +568,53 @@ Rules:
 
 			<div class="ticket-perf"></div>
 
-			{#if isNonEmpty(booking.hotel.name) || booking.hotel.logo || isNonEmpty(booking.hotel.address) || isNonEmpty(booking.hotel.phone) || isNonEmpty(booking.hotel.gps)}
+			{#if isNonEmpty(booking.hotel.name) || booking.hotel.logo || isNonEmpty(booking.hotel.phone)}
 				<div class="ticket-top">
 					<div class="ticket-top-left">
-						{#if booking.hotel.logo}
+						{#if isNonEmpty(booking.hotel.name)}
+							<h2 class="ticket-hotel-name">{booking.hotel.name}</h2>
+						{/if}
+						{#if isNonEmpty(booking.hotel.phone)}
+							<div class="ticket-hotel-phone">{booking.hotel.phone}</div>
+						{/if}
+					</div>
+					{#if booking.hotel.logo}
+						<div class="ticket-top-right">
 							<img
 								class="ticket-hotel-logo"
 								src={booking.hotel.logo}
 								alt={booking.hotel.name || 'Hotel'}
 							/>
-						{/if}
-						{#if isNonEmpty(booking.hotel.name)}
-							<h2 class="ticket-hotel-name">{booking.hotel.name}</h2>
-						{/if}
-					</div>
-					<div class="ticket-top-right">
-						{#if isNonEmpty(booking.hotel.address)}
-							<div class="ticket-hotel-address">{booking.hotel.address}</div>
-						{/if}
-						{#if isNonEmpty(booking.hotel.phone) || isNonEmpty(booking.hotel.gps)}
-							<div class="ticket-hotel-contact">
-								{#if isNonEmpty(booking.hotel.phone)}<span>{booking.hotel.phone}</span>{/if}
-								{#if isNonEmpty(booking.hotel.gps)}<span>{booking.hotel.gps}</span>{/if}
-							</div>
-						{/if}
-					</div>
+						</div>
+					{/if}
 				</div>
 				<div class="ticket-perf"></div>
 			{/if}
 
-			{#if isNonEmpty(booking.confirmation.number) || isNonEmpty(booking.confirmation.pin)}
+			{#if isNonEmpty(booking.confirmation.number) || isNonEmpty(booking.confirmation.pin) || isNonEmpty(booking.hotel.address) || isNonEmpty(booking.hotel.gps)}
 				<div class="ticket-confirmation">
-					{#if isNonEmpty(booking.confirmation.number)}
-						<div class="ticket-ref-item">
-							<span class="label">Confirmation #</span>
-							<span class="value-mono">{booking.confirmation.number}</span>
-						</div>
-					{/if}
-					{#if isNonEmpty(booking.confirmation.pin)}
-						<div class="ticket-ref-item">
-							<span class="label">PIN</span>
-							<span class="value-mono">{booking.confirmation.pin}</span>
-						</div>
-					{/if}
+					<div class="ticket-confirmation-left">
+						{#if isNonEmpty(booking.hotel.address)}
+							<div class="ticket-hotel-address">{booking.hotel.address}</div>
+						{/if}
+						{#if isNonEmpty(booking.hotel.gps)}
+							<div class="ticket-hotel-gps">{booking.hotel.gps}</div>
+						{/if}
+					</div>
+					<div class="ticket-confirmation-right">
+						{#if isNonEmpty(booking.confirmation.number)}
+							<div class="ticket-ref-item">
+								<span class="label">Confirmation #</span>
+								<span class="value-mono">{booking.confirmation.number}</span>
+							</div>
+						{/if}
+						{#if isNonEmpty(booking.confirmation.pin)}
+							<div class="ticket-ref-item">
+								<span class="label">PIN</span>
+								<span class="value-mono">{booking.confirmation.pin}</span>
+							</div>
+						{/if}
+					</div>
 				</div>
 				<div class="ticket-perf"></div>
 			{/if}
@@ -623,16 +659,17 @@ Rules:
 				<div class="ticket-guests">
 					<h2 class="ticket-section-title">Guests</h2>
 					<div class="guests-summary">
-						<span class="value">
-							{booking.guests.roomCount} room{booking.guests.roomCount > 1 ? 's' : ''}
-							&nbsp;&middot;&nbsp;
-							{guestCount} guest{guestCount > 1 ? 's' : ''}
-						</span>
+						{booking.guests.roomCount} room{booking.guests.roomCount > 1 ? 's' : ''}
+						&nbsp;&middot;&nbsp;
+						{guestCount} guest{guestCount > 1 ? 's' : ''}
 					</div>
-					{#each booking.guests.names as name, i}
-						{#if isNonEmpty(name)}
+					{#each booking.guests.names.toSorted((a, b) => Number(b.bookedUnder) - Number(a.bookedUnder)) as guest}
+						{#if isNonEmpty(guest.name)}
 							<div class="ticket-guest-name">
-								<span class="value">{name}</span>
+								<span class="value">{guest.name}</span>
+								{#if guest.bookedUnder}
+									<span class="booked-under-badge">Booked under</span>
+								{/if}
 							</div>
 						{/if}
 					{/each}
@@ -782,6 +819,21 @@ Rules:
 		font-size: 0.85em;
 		font-weight: bold;
 		color: var(--on-surface-color);
+	}
+
+	.booked-under-label {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin-top: 6px;
+		margin-bottom: 0;
+		cursor: pointer;
+	}
+
+	.booked-under-label input[type='checkbox'] {
+		width: auto;
+		margin: 0;
+		cursor: pointer;
 	}
 
 	.btn-remove {
@@ -1069,27 +1121,25 @@ Rules:
 		display: grid;
 		grid-template-columns: 1fr auto;
 		gap: 24px;
-		align-items: start;
+		align-items: center;
 	}
 
 	.ticket-top-left {
 		display: flex;
 		flex-direction: column;
+		gap: 4px;
 	}
 
 	.ticket-top-right {
 		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		text-align: right;
-		gap: 6px;
+		align-items: center;
+		justify-content: flex-end;
 	}
 
 	.ticket-hotel-logo {
 		height: 40px;
 		max-width: 100px;
 		object-fit: contain;
-		margin-bottom: 4px;
 	}
 
 	.ticket-hotel-name {
@@ -1099,27 +1149,27 @@ Rules:
 		letter-spacing: 0.02em;
 	}
 
-	.ticket-hotel-address {
-		font-size: 11px;
-		color: var(--ink-soft);
-		white-space: pre-line;
-		max-width: 260px;
-		line-height: 1.5;
-	}
-
-	.ticket-hotel-contact {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 4px 12px;
-		margin-top: 4px;
+	.ticket-hotel-phone {
 		font-size: 12px;
 		color: var(--ink-soft);
-		justify-content: flex-end;
 	}
 
 	/* ── Confirmation ── */
 
 	.ticket-confirmation {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 24px;
+		align-items: start;
+	}
+
+	.ticket-confirmation-left {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.ticket-confirmation-right {
 		display: flex;
 		justify-content: flex-end;
 		gap: 20px;
@@ -1130,6 +1180,20 @@ Rules:
 		display: flex;
 		flex-direction: column;
 		align-items: flex-end;
+	}
+
+	.ticket-hotel-address {
+		font-size: 11px;
+		color: var(--ink-soft);
+		white-space: pre-line;
+		max-width: 260px;
+		line-height: 1.5;
+	}
+
+	.ticket-hotel-gps {
+		font-size: 11px;
+		color: var(--ink-muted);
+		font-family: 'JetBrains Mono', 'Courier New', monospace;
 	}
 
 	/* ── Section titles ── */
@@ -1207,11 +1271,23 @@ Rules:
 	}
 
 	.guests-summary {
-		margin-bottom: 8px;
+		margin-bottom: 10px;
+		font-size: 12px;
+		color: var(--ink-muted);
+		letter-spacing: 0.04em;
 	}
 
 	.ticket-guest-name {
-		margin-bottom: 4px;
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		margin-bottom: 6px;
+	}
+
+	.booked-under-badge {
+		font-size: 11px;
+		color: var(--ink-muted);
+		font-style: italic;
 	}
 
 	/* ── Issuer footer ── */
