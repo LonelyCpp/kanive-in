@@ -2,42 +2,45 @@
 
 ## Implementation
 
-- [ ] Create `/tools/hotel-reservation` route (`src/routes/tools/hotel-reservation/+page.svelte`)
-- [ ] Build form sidebar with all sections:
-  - [ ] Toolbar: Auto-fill (modal) + Reset buttons
-  - [ ] Hotel details: name, address (textarea), phone, GPS, logo upload
-  - [ ] Confirmation details: confirmation number, booking PIN
-  - [ ] Stay details: check-in date/time, check-out date/time (nights derived)
-  - [ ] Guests & rooms: room count input, dynamic guest name list with Add/Remove
-  - [ ] Price: currency select, total amount
-  - [ ] Aggregator details: name, phone, website, logo upload
-  - [ ] Download PDF button
-- [ ] Build slip preview component:
-  - [ ] Masthead: "Hotel Reservation" (Playfair Display, centered)
-  - [ ] Hotel block: 2-column grid (logo+name left, address/phone/GPS right)
-  - [ ] Confirmation block: confirmation # + PIN
-  - [ ] Stay block: 3-column grid (check-in / nights+icon / check-out)
-  - [ ] Guests block: room count + guest count summary, guest name list
-  - [ ] Total block: currency + amount (Playfair Display, right-aligned)
-  - [ ] Aggregator footer: "Booked via [logo] name · contact" (or fallback footer)
-  - [ ] Dotted perforation dividers (`.ticket-perf`) between all sections
-  - [ ] Conditional rendering: omit any section/element if its source field is empty
-- [ ] Re-use airline-print visual system exactly:
-  - [ ] Same Google Fonts (Inter, JetBrains Mono, Playfair Display)
-  - [ ] Same CSS custom properties (`--paper`, `--ink`, `--ink-soft`, `--ink-muted`, `--accent`, `--paper-edge`)
-  - [ ] Same dot grid background (suppressed in print)
-  - [ ] Same label / value / value-lg / value-mono hierarchy
-- [ ] Implement image compression: canvas resize max 200px → PNG data URL; SVG stored as-is
-- [ ] Implement `@media print` CSS (hide form/nav, print slip only, A4 margins, black ink, white background)
-- [ ] Implement "Download PDF" button → `window.print()`
-- [ ] Implement localStorage auto-save (debounced 300ms) with key `hotel-reservation-booking`
-- [ ] Implement localStorage auto-restore on page mount
-- [ ] Handle corrupt localStorage data (reset to defaults silently)
-- [ ] Responsive layout: side-by-side on desktop (form scrolls, preview sticky), stacked on mobile
-- [ ] Add page entry to `/tools` listing (`src/routes/tools/+page.svelte`)
-- [ ] Add `<svelte:head>` with page title "Hotel Reservation — Tools"
-- [ ] Add Reset button with `confirm()` dialog
-- [ ] Add Auto-fill modal:
-  - [ ] JSON paste textarea + Import button
-  - [ ] LLM extraction prompt section with Copy button
-- [ ] Manual QA: fill form, verify preview, download PDF, reload page, verify restore
+- [x] Create `/tools/hotel-reservation` route (`src/routes/tools/hotel-reservation/+page.svelte`)
+- [x] Build form sidebar with all sections:
+  - [x] Toolbar: Auto-fill (modal) + Reset buttons
+  - [x] Hotel details: name, address (textarea), phone, GPS, logo upload
+  - [x] Confirmation details: confirmation number, booking PIN
+  - [x] Stay details: check-in date/time, check-out date/time (nights derived)
+  - [x] Guests & rooms: room count input, dynamic guest name list with Add/Remove
+  - [x] Price: currency select, total amount
+  - [x] Aggregator details: name, phone, website, logo upload
+  - [x] Download PDF button
+- [x] Build slip preview component:
+  - [x] Masthead: "Hotel Reservation" (Playfair Display, centered)
+  - [x] Hotel block: 2-column grid (logo+name left, address/phone/GPS right)
+  - [x] Confirmation block: confirmation # + PIN
+  - [x] Stay block: 3-column grid (check-in / nights+icon / check-out)
+  - [x] Guests block: room count + guest count summary, guest name list
+  - [x] Total block: currency + amount (Playfair Display, right-aligned)
+  - [x] Aggregator footer: "Booked via [logo] name · contact" (or fallback footer)
+  - [x] Dotted perforation dividers (`.ticket-perf`) between all sections
+  - [x] Conditional rendering: omit any section/element if its source field is empty
+- [x] Re-use airline-print visual system exactly:
+  - [x] Same Google Fonts (Inter, JetBrains Mono, Playfair Display)
+  - [x] Same CSS custom properties (`--paper`, `--ink`, `--ink-soft`, `--ink-muted`, `--accent`, `--paper-edge`)
+  - [x] Same dot grid background (suppressed in print)
+  - [x] Same label / value / value-lg / value-mono hierarchy
+- [x] Implement image compression: canvas resize max 200px → PNG data URL; SVG stored as-is
+- [x] Implement `@media print` CSS (hide form/nav, print slip only, A4 margins, black ink, white background)
+- [x] Implement "Download PDF" button → `window.print()`
+- [x] Implement localStorage auto-save (debounced 300ms) with key `hotel-reservation-booking`
+- [x] Implement localStorage auto-restore on page mount
+- [x] Handle corrupt localStorage data (reset to defaults silently)
+- [x] Responsive layout: side-by-side on desktop (form scrolls, preview sticky), stacked on mobile
+- [x] Add page entry to `/tools` listing (`src/routes/tools/+page.svelte`)
+- [x] Add `<svelte:head>` with page title "Hotel Reservation — Tools"
+- [x] Add Reset button with `confirm()` dialog
+- [x] Add Auto-fill modal:
+  - [x] JSON paste textarea + Import button
+  - [x] LLM extraction prompt section with Copy button
+- [x] Manual QA: fill form, verify preview, download PDF, reload page, verify restore
+- [x] `npm run check` passes (0 errors)
+- [x] `npm run lint` passes
+- [x] `npm run build` passes

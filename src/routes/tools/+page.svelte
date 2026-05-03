@@ -28,6 +28,11 @@
 			description="Generate beautiful, print-friendly flight reservation tickets"
 			link="/tools/airline-print"
 		/>
+		<ToolsCard
+			title="Hotel Reservation"
+			description="Generate beautiful, print-friendly hotel reservation slips"
+			link="/tools/hotel-reservation"
+		/>
 	</div>
 </PageWrapper>
 

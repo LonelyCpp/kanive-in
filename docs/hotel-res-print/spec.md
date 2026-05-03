@@ -25,53 +25,53 @@ A single-page tool at `/tools/hotel-reservation` that:
 
 ### Hotel
 
-| Field          | Type                          | Notes                        |
-| -------------- | ----------------------------- | ---------------------------- |
-| Name           | string                        | required (form-level)        |
-| Address        | string (multiline)            | required (form-level)        |
-| Phone          | string                        |                              |
-| GPS coordinates| string                        | free text, e.g. "12.9716° N, 77.5946° E" |
-| Logo           | image (FileReader → data URL) | compressed ≤200px, PNG. SVG stored as-is |
+| Field           | Type                          | Notes                                    |
+| --------------- | ----------------------------- | ---------------------------------------- |
+| Name            | string                        | required (form-level)                    |
+| Address         | string (multiline)            | required (form-level)                    |
+| Phone           | string                        |                                          |
+| GPS coordinates | string                        | free text, e.g. "12.9716° N, 77.5946° E" |
+| Logo            | image (FileReader → data URL) | compressed ≤200px, PNG. SVG stored as-is |
 
 ### Booking Confirmation
 
-| Field               | Type   | Notes                                          |
-| ------------------- | ------ | ---------------------------------------------- |
-| Confirmation number | string | required (form-level)                          |
+| Field               | Type   | Notes                                                     |
+| ------------------- | ------ | --------------------------------------------------------- |
+| Confirmation number | string | required (form-level)                                     |
 | Booking PIN         | string | grouped with confirmation to disambiguate from postal PIN |
 
 ### Stay
 
-| Field          | Type   | Notes                                              |
-| -------------- | ------ | -------------------------------------------------- |
-| Check-in date  | date   | required (form-level)                              |
-| Check-in time  | time   | 24-hour                                            |
-| Check-out date | date   | required (form-level)                              |
-| Check-out time | time   | 24-hour                                            |
-| Nights         | number | derived: `Math.max(0, dayDiff)`. Omitted if ≤ 0    |
+| Field          | Type   | Notes                                           |
+| -------------- | ------ | ----------------------------------------------- |
+| Check-in date  | date   | required (form-level)                           |
+| Check-in time  | time   | 24-hour                                         |
+| Check-out date | date   | required (form-level)                           |
+| Check-out time | time   | 24-hour                                         |
+| Nights         | number | derived: `Math.max(0, dayDiff)`. Omitted if ≤ 0 |
 
 ### Guests & Rooms
 
-| Field          | Type     | Notes                                              |
-| -------------- | -------- | -------------------------------------------------- |
-| Number of rooms| number   | defaults to 1                                      |
-| Guest names    | string[] | dynamic list, add/remove. Count derived from length |
+| Field           | Type     | Notes                                               |
+| --------------- | -------- | --------------------------------------------------- |
+| Number of rooms | number   | defaults to 1                                       |
+| Guest names     | string[] | dynamic list, add/remove. Count derived from length |
 
 ### Price
 
-| Field       | Type   | Notes                              |
-| ----------- | ------ | ---------------------------------- |
-| Currency    | select | INR, USD, EUR, GBP, AED, SGD       |
-| Total price | number | single value, no breakdown         |
+| Field       | Type   | Notes                        |
+| ----------- | ------ | ---------------------------- |
+| Currency    | select | INR, USD, EUR, GBP, AED, SGD |
+| Total price | number | single value, no breakdown   |
 
 ### Booked Via (Aggregator)
 
-| Field    | Type                          | Notes                        |
-| -------- | ----------------------------- | ---------------------------- |
-| Name     | string                        |                              |
-| Phone    | string                        |                              |
-| Website  | string                        |                              |
-| Logo     | image (FileReader → data URL) | compressed ≤200px, PNG       |
+| Field   | Type                          | Notes                  |
+| ------- | ----------------------------- | ---------------------- |
+| Name    | string                        |                        |
+| Phone   | string                        |                        |
+| Website | string                        |                        |
+| Logo    | image (FileReader → data URL) | compressed ≤200px, PNG |
 
 ## Relationships
 
@@ -101,24 +101,24 @@ Follows the **airline-print** visual system exactly. See `docs/airline-print/spe
 
 ### Typography (same three-typeface system)
 
-| Typeface             | Usage                                                      | Weights       |
-| -------------------- | ---------------------------------------------------------- | ------------- |
-| **Playfair Display** | Masthead, hotel name, total price                          | 600, 700      |
-| **Inter**            | Body copy, labels, guest names, contacts                   | 400, 500, 600 |
-| **JetBrains Mono**   | Confirmation number, PIN, dates, GPS, room count           | 400, 500      |
+| Typeface             | Usage                                            | Weights       |
+| -------------------- | ------------------------------------------------ | ------------- |
+| **Playfair Display** | Masthead, hotel name, total price                | 600, 700      |
+| **Inter**            | Body copy, labels, guest names, contacts         | 400, 500, 600 |
+| **JetBrains Mono**   | Confirmation number, PIN, dates, GPS, room count | 400, 500      |
 
 ### Color Palette (identical to airline-print)
 
 CSS custom properties scoped to `.ticket`:
 
-| Variable       | Value              | Usage                         |
-| -------------- | ------------------ | ----------------------------- |
-| `--paper`      | `hsl(36 30% 96%)`  | Ticket background             |
-| `--ink`        | `hsl(220 45% 12%)` | Primary text (deep navy)      |
-| `--ink-soft`   | `hsl(220 20% 38%)` | Secondary text                |
-| `--ink-muted`  | `hsl(220 15% 60%)` | Captions, fine print          |
-| `--accent`     | `hsl(30 55% 45%)`  | Brass/ochre — icon accent     |
-| `--paper-edge` | `hsl(36 15% 85%)`  | Borders, dotted lines         |
+| Variable       | Value              | Usage                     |
+| -------------- | ------------------ | ------------------------- |
+| `--paper`      | `hsl(36 30% 96%)`  | Ticket background         |
+| `--ink`        | `hsl(220 45% 12%)` | Primary text (deep navy)  |
+| `--ink-soft`   | `hsl(220 20% 38%)` | Secondary text            |
+| `--ink-muted`  | `hsl(220 15% 60%)` | Captions, fine print      |
+| `--accent`     | `hsl(30 55% 45%)`  | Brass/ochre — icon accent |
+| `--paper-edge` | `hsl(36 15% 85%)`  | Borders, dotted lines     |
 
 ### Surface & Dividers
 
@@ -130,10 +130,10 @@ CSS custom properties scoped to `.ticket`:
 
 From `@iconify/svelte` (`mdi:` Material Design Icons):
 
-| Icon                | Placement                              |
-| ------------------- | -------------------------------------- |
-| `mdi:bed`           | Center of stay segment (check-in ↔ check-out) |
-| `mdi:hotel`         | Optional, near hotel name              |
+| Icon        | Placement                                      |
+| ----------- | ---------------------------------------------- |
+| `mdi:bed`   | Center of stay segment (check-in ↔ check-out) |
+| `mdi:hotel` | Optional, near hotel name                      |
 
 ## Slip Section Layout
 
