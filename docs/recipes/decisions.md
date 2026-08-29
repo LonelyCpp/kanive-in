@@ -90,6 +90,12 @@ Opening a recipe, changing pages, loading an image, and resizing all re-apply th
 
 **Why:** The fitted view is the right starting point for reading a handwritten page; silently re-fitting after the user has deliberately zoomed would discard their intent, so the flag arbitrates.
 
+## Mobile board is 2 columns with hairline dividers (no 1-column breakpoint)
+
+On phones the grid stays 2-up — thumbnails stay thumbnail-sized — and each card gets a subtle bottom border (`--on-surface-underline-color`) with bottom padding. Grid rows stretch, so the dividers align across a row.
+
+**Why:** The original single-column layout made scans full-width (not thumbnails) and left a caption visually running into the next card's scan. The hairline gives each card a clear end without heavy card chrome.
+
 ## Lightbox viewport uses `flex: 1 0 62vh`
 
 The image area has a definite, content-independent flex basis so the image's `max-height: 100%` resolves correctly; extra space is distributed by `flex-grow`. (The earlier `flex: 1` + `min-height: 0` only worked because nothing ever scrolled.)

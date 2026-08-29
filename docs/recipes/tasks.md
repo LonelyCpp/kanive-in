@@ -22,3 +22,4 @@
 - [x] Rewrite lightbox viewport as native scroll container (width-based zoom, browser-owned panning)
 - [x] Fit-to-screen fits the scan's height (dynamic zoom floor)
 - [x] Default view = whole page contained; re-fits on load/resize until user zooms
+- [x] Mobile: 2-col grid (smaller thumbnails) + subtle card dividers

@@ -51,7 +51,7 @@ interface Recipe {
 - Card thumbnails are normalized to a 3:4 portrait box with `object-fit: contain` (letterboxing blends into the paper), so every card is the same height and captions align.
 - Hover: card straightens and lifts (transform + shadow transition).
 - Tag chips above the board filter the grid; matches the site's minimal styling.
-- Responsive: 3 cols desktop → 2 tablet → 1 mobile.
+- Responsive: 3 cols desktop → 2 cols on tablet/mobile; on mobile each card gets a subtle bottom hairline so a caption never runs into the next scan.
 
 ## Lightbox implementation
 

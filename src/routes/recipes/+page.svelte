@@ -147,7 +147,6 @@
 		grid-template-columns: repeat(3, 1fr);
 		gap: 28px 20px;
 		margin-top: 40px;
-		align-items: start;
 	}
 
 	.empty {
@@ -158,13 +157,13 @@
 	@media screen and (max-width: 720px) {
 		.board {
 			grid-template-columns: repeat(2, 1fr);
-			gap: 24px 14px;
+			gap: 28px 16px;
 		}
-	}
 
-	@media screen and (max-width: 480px) {
-		.board {
-			grid-template-columns: 1fr;
+		/* Subtle divider under each card so a caption never runs into the next scan */
+		.board :global(.card) {
+			padding-bottom: 20px;
+			border-bottom: 1px solid var(--on-surface-underline-color);
 		}
 	}
 </style>
