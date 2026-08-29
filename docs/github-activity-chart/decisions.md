@@ -6,6 +6,12 @@
 
 **Why:** User chose it over a third-party contributions API and over image embeds (ghchart). It's the official, accurate source with no dependency on an external free service, and returning real JSON enables full styling control. Tradeoff: requires a token setup step.
 
+## D15: Fine-grained PAT needs "All repositories" to count private contributions
+
+**Decision:** The token's Repository access is set to **All repositories** (still zero permission checkboxes). Documented in spec: "Public repositories (read-only)" counts public contributions only.
+
+**Why:** The user's first token used "Public repositories (read-only)" and private repo contributions were missing from the chart. `contributionsCollection` counts contributions only from repositories the token can access, so public-scoped tokens silently undercount. Editing repository access on an existing fine-grained token doesn't change the token string, so the `GITHUB_TOKEN` env var needed no update; only the 24h CDN cache needed a purge (or any redeploy) to reflect the new counts. Org repos behind SAML SSO remain uncountable regardless (SSO limitation).
+
 ## D2: Fetch in `+page.server.ts` load, not a dedicated endpoint
 
 **Decision:** The GraphQL call lives in the main page's `+page.server.ts` load function.

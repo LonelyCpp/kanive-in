@@ -20,7 +20,7 @@ A new section on the main page (`/`) that:
 ## Data Source
 
 - **API:** GitHub GraphQL v4, `contributionsCollection(from:, to:)` → `contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } }`
-- **Auth:** `GITHUB_TOKEN` env var (secret). A classic PAT with **no scopes** works for public contribution data (fine-grained token with "Public repositories (read-only)" also works)
+- **Auth:** `GITHUB_TOKEN` env var (secret). Fine-grained PAT: no permission checkboxes needed, but **Repository access determines what's counted** — "Public repositories (read-only)" counts only public contributions; **"All repositories" is required to include private repo contributions** (implicit metadata read suffices). Org repos behind SAML SSO are never counted. A classic PAT with no scopes is public-only; `repo` scope works but is overpowered.
 - **Username:** `lonelyCpp` (hardcoded, same as the GitHub icon link)
 - **Range:** `from` = 365 days ago, `to` = today (rolling window)
 
