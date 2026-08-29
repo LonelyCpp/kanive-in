@@ -12,7 +12,7 @@
 
 	<h3>Hardware</h3>
 	<ul>
-		<li>MacBook Pro 16" (2021), M1 Pro</li>
+		<li>MacBook Pro 14" M5, 32GB</li>
 		<li>Google Pixel 7 Pro</li>
 	</ul>
 
@@ -20,10 +20,11 @@
 	<ul>
 		<li>ECMAScript / TypeScript</li>
 		<li>React / React Native</li>
-		<li>Cursor / VS Code</li>
+		<li>VS Code</li>
+		<li>Claude / opencode / Codex</li>
 		<li>Svelte</li>
 		<li>Next.js</li>
-		<li>Chrome</li>
+		<li>Brave</li>
 	</ul>
 </PageWrapper>
 
