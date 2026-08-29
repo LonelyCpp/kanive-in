@@ -38,6 +38,10 @@
 </div>
 
 <style>
+	h2 {
+		margin: 0 0 12px 0;
+	}
+
 	.featured-blogs {
 		display: flex;
 		flex-direction: column;

@@ -3,7 +3,10 @@
 	import SocialHeaders from '../components/SocialHeaders.svelte';
 	import IconLink from './components/IconLink.svelte';
 	import FeaturedBlogs from './components/featuredBlogs/FeaturedBlogs.svelte';
+	import GithubActivityChart from './components/GithubActivityChart.svelte';
 	import PageWrapper from './components/PageWrapper.svelte';
+
+	let { data } = $props();
 </script>
 
 <SocialHeaders
@@ -46,7 +49,12 @@
 			/>
 		</div>
 	</div>
-	<div>
+	<div class="section">
+		{#if data.calendar}
+			<GithubActivityChart calendar={data.calendar} />
+		{/if}
+	</div>
+	<div class="section">
 		<FeaturedBlogs />
 	</div>
 </PageWrapper>
@@ -55,13 +63,16 @@
 	.hero {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		height: 320px;
+		padding-top: 88px;
+	}
+
+	.section {
+		margin-top: 48px;
 	}
 
 	@media (max-width: 720px) {
 		.hero {
-			height: 260px;
+			padding-top: 56px;
 		}
 	}
 
