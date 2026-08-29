@@ -1,0 +1,24 @@
+# Tasks
+
+- [x] Add `Recipe` interface + `recipes.json` (with one placeholder entry) in `src/lib/data/`
+- [x] Add placeholder scan image in `static/recipes/`
+- [x] Create `/recipes` route (`+page.ts` typed load, `+page.svelte` board)
+- [x] `RecipeCard.svelte` — pinned-card look, hash-based rotation, hover lift, caption
+- [x] Tag filter chips + client-side filtering (AND semantics)
+- [x] `RecipeLightbox.svelte` — fullscreen, zoom/pan (wheel/drag/pinch), prev/next wrap, metadata panel
+- [x] Keyboard support (← → ESC) + focus trap + body scroll lock
+- [x] Hash deep links: set on open, clear on close, open on load
+- [x] Add "Recipes" link to `NavbarMain.svelte` (both desktop + mobile variants)
+- [x] Responsive grid (3/2/1 cols)
+- [x] Run `npm run check` and `npm run lint` (format) before done
+- [x] Transcribe first batch of 8 scans via subagents (titles, tags, notes)
+- [x] Rename scans to `<slug>.jpg`, add 7 entries to `recipes.json` (shahi paneer = 1 entry, 2 pages)
+- [x] Make `date` optional; add multi-page `images` support with lightbox pager
+- [x] Remove placeholder entry + `placeholder.svg`
+- [x] Normalize card thumbnails to 3:4 (contain) so titles align
+- [x] Make lightbox scrollable when content overflows; zoom/scroll gesture arbitration
+- [x] Add fit-to-screen button in lightbox header
+- [x] Make wheel scroll (never zoom) at 1x; add explicit zoom +/− buttons
+- [x] Rewrite lightbox viewport as native scroll container (width-based zoom, browser-owned panning)
+- [x] Fit-to-screen fits the scan's height (dynamic zoom floor)
+- [x] Default view = whole page contained; re-fits on load/resize until user zooms

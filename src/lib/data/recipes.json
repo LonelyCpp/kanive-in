@@ -1,0 +1,45 @@
+[
+	{
+		"slug": "banana-podi",
+		"title": "Banana Podi",
+		"tags": ["snack", "vegetarian", "south-indian", "coastal"],
+		"note": "Sliced bananas in a wheat, maida and besan batter, deep fried."
+	},
+	{
+		"slug": "chicken-green-masala",
+		"title": "Chicken Green Masala",
+		"tags": ["main", "chicken", "non-vegetarian", "south-indian", "coastal"],
+		"note": "Chicken in a green coriander-chilli paste with ghee-fried onions; written for 1 kg chicken."
+	},
+	{
+		"slug": "chicken-sukka",
+		"title": "Chicken Sukka",
+		"tags": ["main", "chicken", "non-vegetarian", "mangalorean", "coastal"],
+		"note": "Dry chicken with roasted spice masala and pan-fried coconut; measures in 'mushti'."
+	},
+	{
+		"slug": "fish-curry",
+		"title": "Fish Curry",
+		"tags": ["main", "fish", "non-vegetarian", "mangalorean", "coastal"],
+		"note": "Coconut-tamarind curry; spices ground with coconut, boiled, then fish added."
+	},
+	{
+		"slug": "kadle-manoli",
+		"title": "Kadle Manoli",
+		"tags": ["main", "vegetarian", "mangalorean", "coastal", "south-indian"],
+		"note": "Card covers the masala only — fried spices ground with garlic, onion, curry leaves, coconut."
+	},
+	{
+		"slug": "payasam",
+		"title": "Payasam",
+		"tags": ["dessert", "sweet", "vegetarian", "south-indian"],
+		"note": "Sago and moong dal payasam with jaggery, finished with coconut milk and milk."
+	},
+	{
+		"slug": "shahi-paneer",
+		"title": "Shahi Paneer",
+		"tags": ["main", "curry", "vegetarian", "north-indian"],
+		"note": "Two pages: a shorthand draft and a neat step-by-step rewrite (adds kasuri methi).",
+		"images": ["/recipes/shahi-paneer-1.jpg", "/recipes/shahi-paneer-2.jpg"]
+	}
+]
